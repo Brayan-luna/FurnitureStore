@@ -1,0 +1,56 @@
+.business-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.business-settings-success {
+  padding: 14px 18px;
+  background-color: #DCFCE7;
+  border: 1px solid #86EFAC;
+  color: #166534;
+  borderRadius: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.business-section-box {
+  padding: 24px;
+  background-color: #FAF8F5;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+}
+
+.business-section-title {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+
+.business-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.business-footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.btn-reset-business {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  background: #FFF;
+  border: 1px solid #CBD5E1;
+  color: #64748B;
+  cursor: pointer;
+  font-size: 0.88rem;
+}

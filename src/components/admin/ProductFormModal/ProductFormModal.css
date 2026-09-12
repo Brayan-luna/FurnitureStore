@@ -1,0 +1,111 @@
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.product-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 14px;
+}
+
+.product-form-grid-equal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.product-form-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.preset-images-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset-image-btn {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #FFF;
+  font-size: 0.78rem;
+  cursor: pointer;
+  border: 1px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+}
+
+.preset-image-btn.active {
+  border: 2px solid var(--color-primary);
+  font-weight: 700;
+}
+
+.variant-manager-box {
+  padding: 16px;
+  background-color: #FAF8F5;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+}
+
+.variant-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.variant-manager-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.variant-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.variant-rows-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.variant-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.variant-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #EF4444;
+}
+
+.product-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-cancel {
+  padding: 10px 18px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-subtle);
+  background: #FFF;
+  font-weight: 600;
+  cursor: pointer;
+}

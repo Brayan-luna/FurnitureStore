@@ -1,0 +1,137 @@
+.product-manager-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.product-manager-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.product-manager-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.product-manager-btn-new {
+  width: auto;
+  padding: 10px 22px;
+}
+
+.product-manager-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.product-manager-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.product-manager-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
+  background-color: #F3EFEA;
+}
+
+.product-manager-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.product-manager-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.product-manager-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.product-manager-cat-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 700;
+}
+
+.product-manager-desc {
+  font-size: 0.8rem;
+  color: var(--text-body);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 400px;
+}
+
+.product-manager-variants {
+  display: flex;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.product-manager-variant-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.product-manager-price-col {
+  text-align: right;
+  min-width: 120px;
+}
+
+.product-manager-price-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.product-manager-price-val {
+  font-size: 1.1rem;
+  color: var(--color-accent-pink);
+}
+
+.product-manager-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit-product {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background-color: #FFF;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.btn-delete-product {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #FCA5A5;
+  background-color: #FEF2F2;
+  cursor: pointer;
+  color: '#DC2626';
+}

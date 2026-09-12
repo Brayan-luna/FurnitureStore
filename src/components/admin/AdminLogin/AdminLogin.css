@@ -1,0 +1,116 @@
+.admin-login-wrapper {
+  min-height: 100vh;
+  background-color: var(--bg-app);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 420px;
+  background-color: #FFFFFF;
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.admin-login-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.admin-login-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background-color: var(--color-primary);
+  color: #FFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 20px rgba(49, 46, 74, 0.25);
+}
+
+.admin-login-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.admin-login-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-body);
+}
+
+.admin-login-error {
+  padding: 12px 14px;
+  background-color: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  border-radius: 10px;
+  color: #B91C1C;
+  font-size: 0.85rem;
+  margin-bottom: 18px;
+}
+
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-login-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.admin-login-input-wrap {
+  position: relative;
+}
+
+.admin-login-input-wrap .input-field {
+  padding-left: 38px;
+}
+
+.admin-login-input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.admin-login-credentials-note {
+  font-size: 0.78rem;
+  background-color: #F8FAFC;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px dashed #CBD5E1;
+  color: #64748B;
+}
+
+.admin-login-submit {
+  width: 100%;
+  padding: 13px;
+  margin-top: 6px;
+}
+
+.admin-login-back {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.admin-login-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-body);
+  font-weight: 600;
+  text-decoration: none;
+}

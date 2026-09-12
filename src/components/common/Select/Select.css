@@ -1,0 +1,149 @@
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-wrapper.is-open {
+  z-index: 40;
+}
+
+/* Selector Trigger Button (Cerrado) */
+.custom-select-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  background-color: #FAF7F2;
+  border: 1.5px solid #E5DFD5;
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.custom-select-trigger:hover {
+  background-color: #FFFFFF;
+  border-color: var(--color-primary);
+}
+
+.custom-select-wrapper.is-open .custom-select-trigger {
+  background-color: #FFFFFF;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(49, 46, 74, 0.12);
+}
+
+.custom-select-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.select-arrow {
+  flex-shrink: 0;
+  color: var(--text-dark);
+  transition: transform var(--transition-fast);
+}
+
+.select-arrow.is-open {
+  transform: rotate(180deg);
+}
+
+/* Menú Desplegable (Exacto a la Imagen de Referencia) */
+.custom-select-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  min-width: 100%;
+  background-color: #FAF7F2;
+  border: 1.5px solid rgba(232, 227, 218, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(31, 27, 46, 0.14), 0 4px 12px rgba(31, 27, 46, 0.05);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 50;
+  animation: selectMenuFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+@keyframes selectMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.custom-select-dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+/* Opciones individuales */
+.custom-select-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 10px;
+  background-color: transparent;
+  color: var(--text-dark);
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.custom-select-option:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Opción Seleccionada (Exacto a la pastilla gris con texto blanco de la imagen: "Sencilla") */
+.custom-select-option.is-selected {
+  background-color: #5E5E5E;
+  color: #FFFFFF;
+}
+
+.custom-select-option.is-selected:hover {
+  background-color: #525252;
+}
+
+.custom-select-opt-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-select-opt-price {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.custom-select-option.is-selected .custom-select-opt-price {
+  color: rgba(255, 255, 255, 0.85);
+}

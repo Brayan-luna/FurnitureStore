@@ -1,0 +1,64 @@
+.backup-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.backup-msg {
+  padding: 14px 18px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.backup-msg.success {
+  background-color: #DCFCE7;
+  border: 1px solid #86EFAC;
+  color: #166534;
+}
+
+.backup-msg.error {
+  background-color: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #B91C1C;
+}
+
+.backup-card {
+  padding: 24px;
+  background-color: #FAF8F5;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+}
+
+.backup-card-danger {
+  padding: 24px;
+  background-color: #FFF1F2;
+  border-radius: 16px;
+  border: 1px solid #FECDD3;
+}
+
+.backup-title {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.backup-desc {
+  font-size: 0.85rem;
+  color: var(--text-body);
+  margin-bottom: 16px;
+}
+
+.btn-reset-factory {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #BE123C;
+  color: #FFF;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
