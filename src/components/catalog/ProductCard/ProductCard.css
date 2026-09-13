@@ -74,11 +74,14 @@
   margin-bottom: 20px;
 }
 
+.product-price-container {
+  margin-bottom: 18px;
+}
+
 .product-price-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
 }
 
 .price-label {
@@ -93,6 +96,51 @@
   font-weight: 800;
   color: var(--color-accent-pink);
   letter-spacing: -0.5px;
+}
+
+/* Desglose dinámico (Base + Modificador = Total) */
+.product-price-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background-color: #FAF8F5;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  animation: selectMenuFadeIn 0.2s ease;
+}
+
+.price-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.price-breakdown-row.modifier {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.price-breakdown-row.modifier .price-breakdown-val {
+  color: var(--color-accent-pink);
+  font-weight: 700;
+}
+
+.price-breakdown-divider {
+  height: 1px;
+  background-color: var(--border-subtle);
+  margin: 4px 0;
+}
+
+.product-price-row.total {
+  margin-bottom: 0;
+  padding-top: 2px;
+}
+
+.product-price-row.total .price-label {
+  color: var(--text-dark);
 }
 
 .product-card-actions {

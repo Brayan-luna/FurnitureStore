@@ -109,3 +109,11 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+@media (max-width: 480px), (max-width: 425px) {
+  .product-form-grid-2,
+  .product-form-grid-equal {
+    grid-template-columns: 1fr !important;
+  }
+}
+

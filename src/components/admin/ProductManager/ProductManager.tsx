@@ -31,7 +31,7 @@ export default function ProductManager() {
     <div>
       {/* Barra de acción superior */}
       <div className="product-manager-top">
-        <div>
+        <div className="product-manager-heading">
           <h3 className="product-manager-title">Catálogo de Productos</h3>
           <p className="product-manager-subtitle">
             Total de productos activos: {products.length}
@@ -40,10 +40,10 @@ export default function ProductManager() {
 
         <button
           type="button"
-          className="btn-add-to-cart product-manager-btn-new"
+          className="product-manager-btn-new"
           onClick={handleOpenCreate}
         >
-          <Plus size={18} />
+          <Plus size={15} />
           <span>Nuevo Producto</span>
         </button>
       </div>

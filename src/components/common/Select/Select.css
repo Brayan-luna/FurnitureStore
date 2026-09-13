@@ -4,7 +4,7 @@
 }
 
 .custom-select-wrapper.is-open {
-  z-index: 40;
+  z-index: 100;
 }
 
 /* Selector Trigger Button (Cerrado) */
@@ -13,14 +13,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  background-color: #FAF7F2;
-  border: 1.5px solid #E5DFD5;
-  border-radius: var(--radius-sm);
-  padding: 9px 12px;
+  gap: 8px;
+  background-color: #FFFFFF;
+  border: 1.8px solid #2B283A;
+  border-radius: 14px;
+  padding: 8px 14px;
   font-family: var(--font-heading);
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-dark);
   cursor: pointer;
   outline: none;
@@ -29,7 +29,7 @@
 }
 
 .custom-select-trigger:hover {
-  background-color: #FFFFFF;
+  background-color: #FAF7F2;
   border-color: var(--color-primary);
 }
 
@@ -61,17 +61,18 @@
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
-  right: 0;
   min-width: 100%;
+  width: max-content;
+  max-width: min(280px, 90vw);
   background-color: #FAF7F2;
-  border: 1.5px solid rgba(232, 227, 218, 0.95);
+  border: 1.5px solid #EAE5DC;
   border-radius: 16px;
   box-shadow: 0 14px 34px rgba(31, 27, 46, 0.14), 0 4px 12px rgba(31, 27, 46, 0.05);
   padding: 6px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  z-index: 50;
+  gap: 4px;
+  z-index: 150;
   animation: selectMenuFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   max-height: 250px;
   overflow-y: auto;
@@ -104,14 +105,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 9px 14px;
+  padding: 8px 12px;
   border: none;
   border-radius: 10px;
   background-color: transparent;
   color: var(--text-dark);
   font-family: var(--font-heading);
   font-size: 0.88rem;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   text-align: left;
   transition: all 0.15s ease;
@@ -132,18 +133,18 @@
 }
 
 .custom-select-opt-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.3;
+  flex: 1;
 }
 
 .custom-select-opt-price {
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: #6366F1;
   flex-shrink: 0;
 }
 
 .custom-select-option.is-selected .custom-select-opt-price {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.9);
 }

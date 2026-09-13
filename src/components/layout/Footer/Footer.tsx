@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom';
 import { Shield, Phone, MapPin } from 'lucide-react';
 import { InstagramIcon } from '../../common/Icons';
 import { useBusiness } from '../../../context/BusinessContext';
+import { whatsappService } from '../../../services/whatsappService';
+import logoImg from '../../../assets/logo.png';
 import './Footer.css';
 
 export default function Footer() {
   const { business } = useBusiness();
+  const currentLogo = business.logoUrl || logoImg;
 
   return (
     <footer className="site-footer" id="contacto">
@@ -14,8 +17,12 @@ export default function Footer() {
         <div className="footer-top">
           <div style={{ maxWidth: '360px' }}>
             <div className="brand-section" style={{ marginBottom: '16px' }}>
-              <div className="brand-logo-badge">
-                <span>{business.logoText || 'Kids'}</span>
+              <div className="brand-logo-badge" style={{ backgroundColor: '#FFFFFF', padding: '3px', borderRadius: '12px' }}>
+                <img
+                  src={currentLogo}
+                  alt={business.name || 'Joha.vic'}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
               </div>
               <div className="brand-text">
                 <span className="brand-name" style={{ color: '#FFF' }}>{business.name}</span>
@@ -31,8 +38,15 @@ export default function Footer() {
             <h4 style={{ color: '#FFF', fontSize: '1rem', marginBottom: '14px' }}>Contacto & Asesoría</h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.88rem', color: '#CBD5E1' }}>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Phone size={16} color="var(--color-whatsapp)" />
-                <span>WhatsApp: {business.displayPhone || '321 402 8890'}</span>
+                <a
+                  href={whatsappService.getDirectWhatsAppUrl(business)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
+                >
+                  <Phone size={16} color="var(--color-whatsapp)" />
+                  <span>WhatsApp: {business.displayPhone || '321 402 8890'}</span>
+                </a>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <InstagramIcon size={16} color="var(--color-accent-pink)" />

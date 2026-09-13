@@ -1,16 +1,20 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { storageService } from '../services/storageService';
-import { Product, Category } from '../types';
+import { Product, Category, AddonItem } from '../types';
 
 export interface ProductContextValue {
   products: Product[];
   categories: Category[];
+  addons: AddonItem[];
   selectedCategoryId: string;
   setSelectedCategoryId: (id: string) => void;
   filteredProducts: Product[];
   addProduct: (newProduct: Omit<Product, 'id'> & { id?: string }) => Product;
   updateProduct: (id: string, updatedFields: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
+  addAddon: (newAddon: Omit<AddonItem, 'id'> & { id?: string }) => AddonItem;
+  updateAddon: (id: string, updatedFields: Partial<AddonItem>) => void;
+  deleteAddon: (id: string) => void;
   addCategory: (category: Omit<Category, 'id'> & { id?: string }) => Category;
   deleteCategory: (id: string) => void;
   resetAllProducts: () => void;
@@ -21,6 +25,7 @@ const ProductContext = createContext<ProductContextValue | undefined>(undefined)
 export function ProductProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>(() => storageService.getProducts());
   const [categories, setCategories] = useState<Category[]>(() => storageService.getCategories());
+  const [addons, setAddons] = useState<AddonItem[]>(() => storageService.getAddons());
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('todas');
 
   const addProduct = (newProduct: Omit<Product, 'id'> & { id?: string }): Product => {
@@ -44,6 +49,29 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     const updated = products.filter((p) => p.id !== id);
     setProducts(updated);
     storageService.saveProducts(updated);
+  };
+
+  const addAddon = (newAddon: Omit<AddonItem, 'id'> & { id?: string }): AddonItem => {
+    const addonWithId: AddonItem = {
+      ...newAddon,
+      id: newAddon.id || `addon-${Date.now()}`
+    };
+    const updated = [addonWithId, ...addons];
+    setAddons(updated);
+    storageService.saveAddons(updated);
+    return addonWithId;
+  };
+
+  const updateAddon = (id: string, updatedFields: Partial<AddonItem>) => {
+    const updated = addons.map((a) => (a.id === id ? { ...a, ...updatedFields } : a));
+    setAddons(updated);
+    storageService.saveAddons(updated);
+  };
+
+  const deleteAddon = (id: string) => {
+    const updated = addons.filter((a) => a.id !== id);
+    setAddons(updated);
+    storageService.saveAddons(updated);
   };
 
   const addCategory = (category: Omit<Category, 'id'> & { id?: string }): Category => {
@@ -71,6 +99,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     storageService.resetToDefaults();
     setProducts(storageService.getProducts());
     setCategories(storageService.getCategories());
+    setAddons(storageService.getAddons());
     setSelectedCategoryId('todas');
   };
 
@@ -84,12 +113,16 @@ export function ProductProvider({ children }: { children: ReactNode }) {
       value={{
         products,
         categories,
+        addons,
         selectedCategoryId,
         setSelectedCategoryId,
         filteredProducts,
         addProduct,
         updateProduct,
         deleteProduct,
+        addAddon,
+        updateAddon,
+        deleteAddon,
         addCategory,
         deleteCategory,
         resetAllProducts

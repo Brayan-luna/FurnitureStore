@@ -9,7 +9,7 @@
   background-color: #DCFCE7;
   border: 1px solid #86EFAC;
   color: #166534;
-  borderRadius: 12px;
+  border-radius: 12px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -25,13 +25,44 @@
 
 .business-section-title {
   font-size: 1.1rem;
+  font-weight: 800;
   margin-bottom: 16px;
+  color: var(--text-dark);
 }
 
 .business-grid-2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  align-items: start;
+}
+
+.business-form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.business-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.business-form-label {
+  display: flex;
+  align-items: flex-end;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+  min-height: 2.2em; /* Garantiza que etiquetas de 1 y 2 líneas dejen los inputs a la misma altura */
+  line-height: 1.25;
+}
+
+.hero-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  align-items: start;
 }
 
 .business-footer-actions {
@@ -53,4 +84,48 @@
   color: #64748B;
   cursor: pointer;
   font-size: 0.88rem;
+  transition: all var(--transition-fast);
 }
+
+.btn-reset-business:hover {
+  background: #F1F5F9;
+  color: var(--text-dark);
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN: 425px hacia abajo (Mobile) y hasta 600px
+   ============================================================ */
+@media (max-width: 600px), (max-width: 425px) {
+  .business-section-box {
+    padding: 16px 14px;
+    border-radius: 14px;
+  }
+
+  .business-grid-2,
+  .hero-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .business-form-group.full-width {
+    grid-column: 1;
+  }
+
+  .business-form-label {
+    min-height: auto !important;
+    display: block !important;
+    margin-bottom: 4px;
+  }
+
+  .business-footer-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .business-footer-actions button {
+    width: 100% !important;
+    justify-content: center;
+  }
+}
+

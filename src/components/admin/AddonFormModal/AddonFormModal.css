@@ -1,0 +1,95 @@
+.addon-form-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.addon-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.addon-form-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-dark, #2D2727);
+}
+
+.addon-form-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background-color: #FAF8F5;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle, #EDE8E3);
+}
+
+.addon-form-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dark, #2D2727);
+  cursor: pointer;
+}
+
+.addon-form-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary, #312E4A);
+  cursor: pointer;
+}
+
+.addon-form-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted, #8A847F);
+  margin-left: 28px;
+}
+
+.addon-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle, #EDE8E3);
+}
+
+.addon-form-btn-cancel {
+  padding: 10px 20px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-subtle, #EDE8E3);
+  background-color: #FFFFFF;
+  color: var(--text-body, #6B6560);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.addon-form-btn-cancel:hover {
+  background-color: #F8F6F4;
+  color: var(--text-dark, #2D2727);
+}
+
+.addon-form-btn-save {
+  padding: 10px 24px;
+  border-radius: 9999px;
+  border: none;
+  background-color: var(--color-primary, #312E4A);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(49, 46, 74, 0.2);
+}
+
+.addon-form-btn-save:hover {
+  background-color: #211E33;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(49, 46, 74, 0.28);
+}

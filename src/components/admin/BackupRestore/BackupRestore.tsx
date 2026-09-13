@@ -5,7 +5,7 @@ import { useBusiness } from '../../../context/BusinessContext';
 import './BackupRestore.css';
 
 export default function BackupRestore() {
-  const { products, categories, resetAllProducts } = useProducts();
+  const { products, categories, addons, resetAllProducts } = useProducts();
   const { business, updateBusiness, resetBusiness } = useBusiness();
 
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -16,7 +16,8 @@ export default function BackupRestore() {
       exportDate: new Date().toISOString(),
       business,
       categories,
-      products
+      products,
+      addons
     };
 
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backupData, null, 2));
@@ -45,6 +46,9 @@ export default function BackupRestore() {
         }
         if (parsed.categories) {
           localStorage.setItem('furniture_store_categories_v1', JSON.stringify(parsed.categories));
+        }
+        if (parsed.addons) {
+          localStorage.setItem('furniture_store_addons_v1', JSON.stringify(parsed.addons));
         }
         setMessage({ type: 'success', text: '¡Copia restaurada correctamente! Recarga la página para visualizar.' });
         setTimeout(() => window.location.reload(), 1500);

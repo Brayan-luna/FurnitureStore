@@ -58,6 +58,9 @@ export default function ProductCard({ product }: ProductCardProps) {
     business
   );
 
+  // Modificadores de precio activos
+  const hasModifiers = typeModifier > 0 || addModifier > 0;
+
   return (
     <article className="product-card" id={`product-${product.id}`}>
       {/* Media & Badge */}
@@ -102,10 +105,38 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </div>
 
-        {/* Fila de precio */}
-        <div className="product-price-row">
-          <span className="price-label">PRECIO</span>
-          <span className="price-amount">{formatPrice(currentPrice)}</span>
+        {/* Fila de precio con desglose si se elige una opción con costo adicional */}
+        <div className="product-price-container">
+          {hasModifiers ? (
+            <div className="product-price-breakdown">
+              <div className="price-breakdown-row">
+                <span className="price-breakdown-label">Base:</span>
+                <span className="price-breakdown-val">{formatPrice(basePrice)}</span>
+              </div>
+              {typeModifier > 0 && (
+                <div className="price-breakdown-row modifier">
+                  <span className="price-breakdown-label">+{selectedType?.name}:</span>
+                  <span className="price-breakdown-val">+{formatPrice(typeModifier)}</span>
+                </div>
+              )}
+              {addModifier > 0 && (
+                <div className="price-breakdown-row modifier">
+                  <span className="price-breakdown-label">+{selectedAdditional?.name}:</span>
+                  <span className="price-breakdown-val">+{formatPrice(addModifier)}</span>
+                </div>
+              )}
+              <div className="price-breakdown-divider" />
+              <div className="product-price-row total">
+                <span className="price-label">TOTAL</span>
+                <span className="price-amount">{formatPrice(currentPrice)}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="product-price-row">
+              <span className="price-label">PRECIO</span>
+              <span className="price-amount">{formatPrice(currentPrice)}</span>
+            </div>
+          )}
         </div>
 
         {/* Fila de botones de acción */}

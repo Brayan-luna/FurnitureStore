@@ -987,6 +987,30 @@ button, select, input, textarea {
   border-color: var(--color-primary);
 }
 
+select.input-field, select {
+  width: 100%;
+  padding: 8px 36px 8px 14px;
+  border-radius: 14px;
+  border: 1.8px solid #2B283A;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  outline: none;
+  background-color: #FFFFFF;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231F1B2E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  transition: all var(--transition-fast);
+}
+
+select.input-field:focus, select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(49, 46, 74, 0.12);
+}
+
 .btn-whatsapp-order {
   width: 100%;
   display: flex;

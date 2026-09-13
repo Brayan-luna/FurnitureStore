@@ -1,0 +1,67 @@
+.addon-section {
+  margin: 56px 0 32px 0;
+  padding: 36px 32px;
+  background: linear-gradient(180deg, #FBF8F5 0%, #F5EFEB 100%);
+  border-radius: 28px;
+  border: 1px solid var(--border-subtle, #EBE5DF);
+}
+
+.addon-section-header {
+  margin-bottom: 32px;
+  text-align: center;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.addon-section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background-color: #FFFFFF;
+  color: var(--color-accent-pink, #E0567C);
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.addon-section-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-dark, #2D2727);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+
+.addon-section-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-body, #6B6560);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.addon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 22px;
+}
+
+@media (max-width: 768px) {
+  .addon-section {
+    padding: 24px 16px;
+    border-radius: 20px;
+    margin: 40px 0 24px 0;
+  }
+
+  .addon-section-title {
+    font-size: 1.5rem;
+  }
+
+  .addon-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

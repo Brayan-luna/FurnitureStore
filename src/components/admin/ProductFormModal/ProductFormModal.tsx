@@ -1,5 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import Modal from '../../common/Modal';
+import ImageUploader from '../../common/ImageUploader';
+import Select from '../../common/Select';
 import { Plus, Trash2 } from 'lucide-react';
 import { useProducts } from '../../../context/ProductContext';
 import { Product, ProductTypeOption, ProductAdditionalOption } from '../../../types';
@@ -159,17 +161,15 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
             <label className="product-form-label">
               Categoría
             </label>
-            <select
-              className="input-field"
+            <Select
               value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-            >
-              {availableCategories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+              onChange={setCategoryId}
+              options={availableCategories.map((c) => ({
+                id: c.id,
+                name: c.name
+              }))}
+              ariaLabel="Seleccionar categoría"
+            />
           </div>
         </div>
 
@@ -187,40 +187,35 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
           />
         </div>
 
-        {/* Precio Base e Imagen */}
-        <div className="product-form-grid-equal">
-          <div>
-            <label className="product-form-label">
-              Precio Base (COP) *
-            </label>
-            <input
-              type="number"
-              className="input-field"
-              value={basePrice}
-              onChange={(e) => setBasePrice(Number(e.target.value))}
-              step="10000"
-              required
-            />
-          </div>
+        {/* Precio Base */}
+        <div style={{ marginBottom: '16px' }}>
+          <label className="product-form-label">
+            Precio Base (COP) *
+          </label>
+          <input
+            type="number"
+            className="input-field"
+            value={basePrice}
+            onChange={(e) => setBasePrice(Number(e.target.value))}
+            step="10000"
+            required
+          />
+        </div>
 
-          <div>
-            <label className="product-form-label">
-              URL de Imagen
-            </label>
-            <input
-              type="text"
-              className="input-field"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="/images/cama-cuna-plus.jpg"
-            />
-          </div>
+        {/* Carga de Imagen (Selector de Archivos Móvil/PC o URL) */}
+        <div style={{ marginBottom: '16px' }}>
+          <ImageUploader
+            value={imageUrl}
+            onChange={setImageUrl}
+            label="Foto del Producto"
+            placeholder="/images/cama-cuna-plus.jpg o https://..."
+          />
         </div>
 
         {/* Galería rápida de imágenes prediseñadas */}
-        <div>
+        <div style={{ marginBottom: '16px' }}>
           <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '6px' }}>
-            O selecciona una imagen de estudio disponible:
+            O elige una imagen de estudio disponible:
           </label>
           <div className="preset-images-list">
             {PRESET_IMAGES.map((preset) => (

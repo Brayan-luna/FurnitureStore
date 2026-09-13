@@ -56,7 +56,7 @@ export default function Hero() {
           {/* Barra inferior de datos de contacto incrustada en el Hero */}
           <div className="hero-contact-footer">
             <a
-              href={`https://wa.me/${business.whatsappNumber}`}
+              href={whatsappService.getDirectWhatsAppUrl(business)}
               target="_blank"
               rel="noopener noreferrer"
               className="contact-meta-item"

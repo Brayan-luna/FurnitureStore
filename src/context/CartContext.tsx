@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product, ProductTypeOption, ProductAdditionalOption, CartItem, LastAddedItem, CartContextValue } from '../types';
+import { Product, ProductTypeOption, ProductAdditionalOption, CartItem, LastAddedItem, CartContextValue, AddonItem } from '../types';
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
 
@@ -74,6 +74,44 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, 3500);
   };
 
+  const addAddonToCart = (addon: AddonItem, quantity = 1) => {
+    const cartItemId = `addon-${addon.id}`;
+    const price = addon.price;
+
+    setItems((prevItems) => {
+      const existingIndex = prevItems.findIndex((item) => item.cartItemId === cartItemId);
+      if (existingIndex > -1) {
+        const updated = [...prevItems];
+        updated[existingIndex].quantity += quantity;
+        return updated;
+      } else {
+        return [
+          ...prevItems,
+          {
+            cartItemId,
+            productId: addon.id,
+            name: addon.name,
+            imageUrl: addon.imageUrl || '/logo.png',
+            unitPrice: price,
+            quantity,
+            isAddon: true,
+            selectedAdditional: { id: 'addon', name: 'Accesorio Adicional', priceModifier: 0 }
+          }
+        ];
+      }
+    });
+
+    setLastAddedItem({
+      name: addon.name,
+      typeName: 'Accesorio Adicional',
+      price
+    });
+
+    setTimeout(() => {
+      setLastAddedItem(null);
+    }, 3500);
+  };
+
   const updateQuantity = (cartItemId: string, newQty: number) => {
     if (newQty <= 0) {
       removeFromCart(cartItemId);
@@ -82,6 +120,59 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) =>
       prev.map((item) => (item.cartItemId === cartItemId ? { ...item, quantity: newQty } : item))
     );
+  };
+
+  const updateCartItem = (
+    oldCartItemId: string,
+    newType: ProductTypeOption,
+    newAdditional: ProductAdditionalOption,
+    newUnitPrice: number
+  ) => {
+    setItems((prevItems) => {
+      const targetItem = prevItems.find((it) => it.cartItemId === oldCartItemId);
+      if (!targetItem) return prevItems;
+
+      const newCartItemId = `${targetItem.productId}-${newType.id}-${newAdditional.id}`;
+
+      // Si el id no cambió, solo actualizamos los datos del ítem
+      if (newCartItemId === oldCartItemId) {
+        return prevItems.map((it) =>
+          it.cartItemId === oldCartItemId
+            ? {
+                ...it,
+                selectedType: newType,
+                selectedAdditional: newAdditional,
+                unitPrice: newUnitPrice
+              }
+            : it
+        );
+      }
+
+      // Si ya existía otro ítem con la misma combinación, sumamos la cantidad y removemos el anterior
+      const existingSameItemIndex = prevItems.findIndex((it) => it.cartItemId === newCartItemId);
+      if (existingSameItemIndex > -1) {
+        return prevItems
+          .filter((it) => it.cartItemId !== oldCartItemId)
+          .map((it) =>
+            it.cartItemId === newCartItemId
+              ? { ...it, quantity: it.quantity + targetItem.quantity }
+              : it
+          );
+      }
+
+      // Si es una combinación diferente que no existía, actualizamos el ítem
+      return prevItems.map((it) =>
+        it.cartItemId === oldCartItemId
+          ? {
+              ...it,
+              cartItemId: newCartItemId,
+              selectedType: newType,
+              selectedAdditional: newAdditional,
+              unitPrice: newUnitPrice
+            }
+          : it
+      );
+    });
   };
 
   const removeFromCart = (cartItemId: string) => {
@@ -102,6 +193,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         addToCart,
         removeFromCart,
         updateQuantity,
+        updateCartItem,
         clearCart,
         totalItems,
         totalPrice,
@@ -109,7 +201,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setIsCartOpen,
         openCart: () => setIsCartOpen(true),
         closeCart: () => setIsCartOpen(false),
-        lastAddedItem
+        lastAddedItem,
+        addAddonToCart
       }}
     >
       {children}

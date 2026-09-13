@@ -1,15 +1,17 @@
 import { BusinessConfig } from '../types';
 
 export const initialBusinessConfig: BusinessConfig = {
-  name: 'Zona Kids Home',
+  name: 'Joha.vic',
   slogan: 'Muebles y accesorios infantiles',
-  whatsappNumber: '573214028890',
-  displayPhone: '321 402 8890',
+  logoUrl: '/logo.png',
+  whatsappNumber: '573117596281',
+  whatsappLink: 'https://wa.me/message/MGA7KPPOQIPVK1',
+  displayPhone: '311 759 6281',
   instagram: '@zona_kids_home',
   website: 'zonakidshome.com',
   city: 'Villavicencio',
   cityNote: 'Fabricantes directos en Villavicencio',
-  logoText: 'Kids',
+  logoText: 'Joha.vic',
   currency: 'COP',
   hero: {
     tag: '✦ Catálogo Cama Cunas 2026',
@@ -20,7 +22,6 @@ export const initialBusinessConfig: BusinessConfig = {
     catalogButtonText: 'Ver catálogo ↓'
   },
   navLinks: [
-    { label: '¿Cómo empezar?', href: '#como-empezar' },
     { label: 'Catálogo', href: '#catalogo' },
     { label: 'Adicionales', href: '#adicionales' },
     { label: 'Contacto', href: '#contacto' }

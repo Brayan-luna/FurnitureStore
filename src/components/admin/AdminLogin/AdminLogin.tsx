@@ -1,8 +1,9 @@
 import React, { useState, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Lock, User, ArrowLeft } from 'lucide-react';
+import { Lock, User, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { useBusiness } from '../../../context/BusinessContext';
+import logoImg from '../../../assets/logo.png';
 import './AdminLogin.css';
 
 export default function AdminLogin() {
@@ -12,6 +13,8 @@ export default function AdminLogin() {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin123');
   const [error, setError] = useState('');
+
+  const currentLogo = business.logoUrl || logoImg;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -26,8 +29,8 @@ export default function AdminLogin() {
     <div className="admin-login-wrapper">
       <div className="admin-login-card">
         <div className="admin-login-header">
-          <div className="admin-login-badge">
-            <Shield size={28} />
+          <div className="admin-login-badge" style={{ backgroundColor: '#FFFFFF', padding: '4px', border: '1px solid var(--border-subtle)' }}>
+            <img src={currentLogo} alt={business.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <h2 className="admin-login-title">
             Panel Administrativo

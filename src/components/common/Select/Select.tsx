@@ -14,9 +14,17 @@ export interface SelectProps {
   options?: SelectOption[];
   name?: string;
   ariaLabel?: string;
+  showPriceModifier?: boolean;
 }
 
-export default function Select({ value, onChange, options = [], name, ariaLabel }: SelectProps) {
+export default function Select({
+  value,
+  onChange,
+  options = [],
+  name,
+  ariaLabel,
+  showPriceModifier = false
+}: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +104,7 @@ export default function Select({ value, onChange, options = [], name, ariaLabel 
                 onClick={() => handleSelect(opt.id)}
               >
                 <span className="custom-select-opt-name">{opt.name}</span>
-                {opt.priceModifier !== undefined && opt.priceModifier > 0 && (
+                {showPriceModifier && opt.priceModifier !== undefined && opt.priceModifier > 0 && (
                   <span className="custom-select-opt-price">
                     +${Number(opt.priceModifier).toLocaleString('es-CO')}
                   </span>

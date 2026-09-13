@@ -3,6 +3,7 @@ import Header from '../components/layout/Header';
 import Hero from '../components/layout/Hero';
 import CategoryFilter from '../components/catalog/CategoryFilter';
 import ProductGrid from '../components/catalog/ProductGrid';
+import AddonSection from '../components/catalog/AddonSection';
 import CartDrawer from '../components/cart/CartDrawer';
 import Footer from '../components/layout/Footer';
 import { useCart } from '../context/CartContext';
@@ -110,6 +111,9 @@ export default function StorePage() {
 
         {/* Grilla de Productos */}
         <ProductGrid />
+
+        {/* Sección de Adicionales */}
+        <AddonSection />
       </main>
 
       <Footer />

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Package, Tag, Building2, Download, LogOut, ExternalLink, LucideIcon } from 'lucide-react';
+import { Package, Tag, Layers, Building2, Download, LogOut, ExternalLink, LucideIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBusiness } from '../context/BusinessContext';
+import logoImg from '../assets/logo.png';
 import AdminLogin from '../components/admin/AdminLogin';
 import ProductManager from '../components/admin/ProductManager';
 import CategoryManager from '../components/admin/CategoryManager';
+import AddonManager from '../components/admin/AddonManager';
 import BusinessSettings from '../components/admin/BusinessSettings';
 import BackupRestore from '../components/admin/BackupRestore';
 
@@ -20,6 +22,8 @@ export default function AdminPage() {
   const { business } = useBusiness();
   const [activeTab, setActiveTab] = useState<string>('products');
 
+  const currentLogo = business.logoUrl || logoImg;
+
   if (!isAuthenticated) {
     return <AdminLogin />;
   }
@@ -27,6 +31,7 @@ export default function AdminPage() {
   const navTabs: NavTab[] = [
     { id: 'products', label: 'Productos', icon: Package },
     { id: 'categories', label: 'Categorías', icon: Tag },
+    { id: 'addons', label: 'Adicionales', icon: Layers },
     { id: 'business', label: 'Identidad & WhatsApp', icon: Building2 },
     { id: 'backup', label: 'Respaldo JSON', icon: Download },
   ];
@@ -58,17 +63,19 @@ export default function AdminPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
               style={{
-                width: '38px',
-                height: '38px',
+                width: '42px',
+                height: '42px',
                 borderRadius: '10px',
-                backgroundColor: 'var(--color-primary)',
-                color: '#FFF',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid var(--border-subtle)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                padding: '2px',
+                overflow: 'hidden'
               }}
             >
-              <Shield size={20} />
+              <img src={currentLogo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div>
               <div style={{ fontWeight: '800', fontSize: '1.05rem' }}>Administración - {business.name}</div>
@@ -178,6 +185,7 @@ export default function AdminPage() {
         >
           {activeTab === 'products' && <ProductManager />}
           {activeTab === 'categories' && <CategoryManager />}
+          {activeTab === 'addons' && <AddonManager />}
           {activeTab === 'business' && <BusinessSettings />}
           {activeTab === 'backup' && <BackupRestore />}
         </div>

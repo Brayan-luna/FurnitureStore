@@ -37,7 +37,9 @@ export interface NavLink {
 export interface BusinessConfig {
   name: string;
   slogan: string;
+  logoUrl?: string;
   whatsappNumber: string;
+  whatsappLink?: string;
   displayPhone: string;
   instagram: string;
   website: string;
@@ -58,6 +60,15 @@ export interface BusinessConfig {
 
 export interface BusinessSettings extends Partial<BusinessConfig> {}
 
+export interface AddonItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category?: string;
+  imageUrl?: string;
+}
+
 export interface CartItem {
   cartItemId: string;
   productId: string;
@@ -67,6 +78,7 @@ export interface CartItem {
   selectedAdditional?: ProductAdditionalOption;
   unitPrice: number;
   quantity: number;
+  isAddon?: boolean;
 }
 
 export interface LastAddedItem {
@@ -85,8 +97,15 @@ export interface CartContextValue {
     unitPrice?: number,
     quantity?: number
   ) => void;
+  addAddonToCart: (addon: AddonItem, quantity?: number) => void;
   removeFromCart: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, newQty: number) => void;
+  updateCartItem: (
+    oldCartItemId: string,
+    newType: ProductTypeOption,
+    newAdditional: ProductAdditionalOption,
+    newUnitPrice: number
+  ) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -100,14 +119,18 @@ export interface CartContextValue {
 export interface ProductContextType {
   products: Product[];
   categories: Category[];
+  addons: AddonItem[];
   addProduct: (product: Omit<Product, 'id'>) => Product;
   updateProduct: (id: string, updatedData: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
+  addAddon: (addon: Omit<AddonItem, 'id'> & { id?: string }) => AddonItem;
+  updateAddon: (id: string, updatedData: Partial<AddonItem>) => void;
+  deleteAddon: (id: string) => void;
   addCategory: (category: Omit<Category, 'id'>) => Category;
   updateCategory: (id: string, updatedData: Partial<Category>) => void;
   deleteCategory: (id: string) => void;
   resetToDefaults: () => void;
-  loadCustomData: (data: { products?: Product[]; categories?: Category[] }) => void;
+  loadCustomData: (data: { products?: Product[]; categories?: Category[]; addons?: AddonItem[] }) => void;
 }
 
 export interface BusinessContextType {

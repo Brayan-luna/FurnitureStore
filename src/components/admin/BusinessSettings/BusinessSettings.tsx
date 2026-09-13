@@ -2,6 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import { useBusiness } from '../../../context/BusinessContext';
 import { Check, RotateCcw } from 'lucide-react';
 import { BusinessConfig } from '../../../types';
+import ImageUploader from '../../common/ImageUploader';
 import './BusinessSettings.css';
 
 export default function BusinessSettings() {
@@ -57,8 +58,8 @@ export default function BusinessSettings() {
       <div className="business-section-box">
         <h3 className="business-section-title">Identidad de la Marca (White-Label)</h3>
         <div className="business-grid-2">
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-form-group">
+            <label className="business-form-label">
               Nombre de la Empresa *
             </label>
             <input
@@ -71,8 +72,8 @@ export default function BusinessSettings() {
             />
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-form-group">
+            <label className="business-form-label">
               Eslogan o Subtítulo
             </label>
             <input
@@ -84,8 +85,8 @@ export default function BusinessSettings() {
             />
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-form-group">
+            <label className="business-form-label">
               Texto de Insignia / Logo
             </label>
             <input
@@ -97,8 +98,8 @@ export default function BusinessSettings() {
             />
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-form-group">
+            <label className="business-form-label">
               Ciudad / Origen
             </label>
             <input
@@ -109,6 +110,16 @@ export default function BusinessSettings() {
               placeholder="Villavicencio"
             />
           </div>
+
+          <div className="business-form-group full-width" style={{ marginTop: '8px' }}>
+            <ImageUploader
+              value={formData.logoUrl || ''}
+              onChange={(newLogo) => handleChange('logoUrl', newLogo)}
+              label="Logo de la Empresa (PNG, JPG o WebP)"
+              placeholder="/logo.png o selecciona un archivo..."
+              previewHeight={140}
+            />
+          </div>
         </div>
       </div>
 
@@ -116,25 +127,25 @@ export default function BusinessSettings() {
       <div className="business-section-box">
         <h3 className="business-section-title">Canales de Venta & WhatsApp</h3>
         <div className="business-grid-2">
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
-              Número de WhatsApp para Recibir Pedidos *
+          <div className="business-form-group">
+            <label className="business-form-label">
+              Enlace o Número de WhatsApp para Recibir Pedidos *
             </label>
             <input
               type="text"
               className="input-field"
               value={formData.whatsappNumber}
               onChange={(e) => handleChange('whatsappNumber', e.target.value)}
-              placeholder="573214028890 (con código de país)"
+              placeholder="https://wa.me/message/MGA7KPPOQIPVK1"
               required
             />
-            <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-              Aquí llegarán los mensajes con el detalle del carrito y pedidos.
+            <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '4px' }}>
+              Enlace directo (wa.me) o número con código de país para pedidos y consultas.
             </small>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-form-group">
+            <label className="business-form-label">
               Teléfono Visible al Público
             </label>
             <input
@@ -142,12 +153,12 @@ export default function BusinessSettings() {
               className="input-field"
               value={formData.displayPhone}
               onChange={(e) => handleChange('displayPhone', e.target.value)}
-              placeholder="321 402 8890"
+              placeholder="311 759 6281"
             />
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-form-group">
+            <label className="business-form-label">
               Instagram de la Empresa
             </label>
             <input
@@ -159,8 +170,8 @@ export default function BusinessSettings() {
             />
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-form-group">
+            <label className="business-form-label">
               Sitio Web / Dominio
             </label>
             <input
@@ -172,8 +183,8 @@ export default function BusinessSettings() {
             />
           </div>
 
-          <div style={{ gridColumn: 'span 2' }}>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-form-group full-width">
+            <label className="business-form-label">
               Ubicación o Ciudad de Fabricación
             </label>
             <input
@@ -189,11 +200,11 @@ export default function BusinessSettings() {
 
       {/* Banner Principal (Hero) */}
       <div className="business-section-box">
-        <h3 className="business-section-title">Textos del Banner Principal (Hero)</h3>
+        <h3 className="business-section-title">Banner Principal (Hero)</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-grid-2">
+            <div className="business-form-group">
+              <label className="business-form-label">
                 Etiqueta Superior
               </label>
               <input
@@ -205,35 +216,22 @@ export default function BusinessSettings() {
               />
             </div>
 
-            <div>
-              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
-                Imagen de Fondo del Hero
+            <div className="business-form-group">
+              <label className="business-form-label">
+                Título Principal
               </label>
               <input
                 type="text"
                 className="input-field"
-                value={formData.hero?.bgImage || ''}
-                onChange={(e) => handleHeroChange('bgImage', e.target.value)}
-                placeholder="/images/hero-crib.jpg"
+                value={formData.hero?.title || ''}
+                onChange={(e) => handleHeroChange('title', e.target.value)}
+                placeholder="Diseño, calidad y funcionalidad para el cuarto de tu bebé"
               />
             </div>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
-              Título Principal
-            </label>
-            <input
-              type="text"
-              className="input-field"
-              value={formData.hero?.title || ''}
-              onChange={(e) => handleHeroChange('title', e.target.value)}
-              placeholder="Diseño, calidad y funcionalidad para el cuarto de tu bebé"
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+          <div className="business-form-group">
+            <label className="business-form-label">
               Párrafo Descriptivo
             </label>
             <textarea
@@ -242,6 +240,16 @@ export default function BusinessSettings() {
               value={formData.hero?.description || ''}
               onChange={(e) => handleHeroChange('description', e.target.value)}
               placeholder="Camas cuna y camas corral que evolucionan con tu bebé..."
+            />
+          </div>
+
+          <div className="business-form-group" style={{ marginTop: '4px' }}>
+            <ImageUploader
+              value={formData.hero?.bgImage || ''}
+              onChange={(newBg) => handleHeroChange('bgImage', newBg)}
+              label="Imagen de Fondo del Banner (Hero)"
+              placeholder="/images/hero-crib.jpg o selecciona un archivo..."
+              previewHeight={200}
             />
           </div>
         </div>

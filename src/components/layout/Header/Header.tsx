@@ -2,11 +2,14 @@ import React from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { useBusiness } from '../../../context/BusinessContext';
+import logoImg from '../../../assets/logo.png';
 import './Header.css';
 
 export default function Header() {
   const { totalItems, openCart } = useCart();
   const { business } = useBusiness();
+
+  const currentLogo = business.logoUrl || logoImg;
 
   return (
     <header className="site-header">
@@ -15,11 +18,11 @@ export default function Header() {
           {/* Logo y Branding */}
           <a href="/" className="brand-section">
             <div className="brand-logo-badge">
-              {business.logoText ? (
-                <span>{business.logoText}</span>
-              ) : (
-                <span>Kids</span>
-              )}
+              <img
+                src={currentLogo}
+                alt={business.name || 'Joha.vic'}
+                className="brand-logo-img"
+              />
             </div>
             <div className="brand-text">
               <span className="brand-name">{business.name}</span>
@@ -29,7 +32,6 @@ export default function Header() {
 
           {/* Menú de navegación central según Imagen 2 */}
           <nav className="nav-menu">
-            <a href="#como-empezar" className="nav-link">¿Cómo empezar?</a>
             <a href="#catalogo" className="nav-link">Catálogo</a>
             <a href="#adicionales" className="nav-link">Adicionales</a>
             <a href="#contacto" className="nav-link">Contacto</a>
