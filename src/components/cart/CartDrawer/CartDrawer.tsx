@@ -242,6 +242,34 @@ export default function CartDrawer() {
                       <div className="cart-item-details">
                         {item.isAddon ? (
                           <span className="cart-item-addon-badge">Accesorio adicional</span>
+                        ) : item.customization ? (
+                          <div className="cart-customization-summary">
+                            <div className="cart-detail-line">
+                              <span className={`cart-detail-tag ${item.customization.quality === 'PREMIUM' ? 'tag-premium' : ''}`}>
+                                Línea {item.customization.quality}
+                              </span>
+                              <span style={{ margin: '0 4px', opacity: 0.5 }}>•</span>
+                              <strong>{item.customization.size.name} ({item.customization.size.label})</strong>
+                            </div>
+                            <div className="cart-detail-line">
+                              <span className="cart-detail-tag">Colchón:</span>{' '}
+                              <span>{item.customization.mattress ? item.customization.mattress.name : 'Sin colchón'}</span>
+                            </div>
+                            {item.customization.color && (
+                              <div className="cart-detail-line">
+                                <span className="cart-detail-tag">Color:</span>{' '}
+                                <span>{item.customization.color.name}</span>
+                              </div>
+                            )}
+                            {item.customization.addons && item.customization.addons.length > 0 && (
+                              <div className="cart-detail-line">
+                                <span className="cart-detail-tag">Mejoras:</span>{' '}
+                                <span style={{ color: 'var(--text-dark)', fontWeight: 600 }}>
+                                  {item.customization.addons.map((a) => a.name).join(', ')}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         ) : (
                           <>
                             <div className="cart-detail-line">

@@ -67,11 +67,81 @@
   overflow: hidden;
 }
 
-.product-selectors-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* Botón Ármala como quieras */
+.btn-open-customizer {
+  background: linear-gradient(135deg, #FAF7F2 0%, #F5EFE6 100%);
+  border: 1.5px solid #E6DEC8;
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
-  margin-bottom: 20px;
+  cursor: pointer;
+  margin-bottom: 18px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.btn-open-customizer:hover {
+  border-color: var(--color-accent-pink);
+  background: #FFFDFC;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(212, 107, 132, 0.18);
+}
+
+.btn-open-customizer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-open-customizer-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background-color: var(--color-accent-pink-subtle);
+  color: var(--color-accent-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.btn-open-customizer:hover .btn-open-customizer-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.btn-open-customizer-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-open-customizer-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  line-height: 1.25;
+}
+
+.btn-open-customizer-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.btn-open-customizer-arrow {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-accent-pink);
+  transition: transform 0.2s ease;
+}
+
+.btn-open-customizer:hover .btn-open-customizer-arrow {
+  transform: translateX(3px);
 }
 
 .product-price-container {

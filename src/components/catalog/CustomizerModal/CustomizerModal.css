@@ -1,0 +1,729 @@
+/* Backdrop y Contenedor Principal */
+.customizer-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(18, 16, 30, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+.customizer-modal-content {
+  background-color: #FFFFFF;
+  width: 100%;
+  max-width: 780px;
+  max-height: 92vh;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Header */
+.customizer-modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #FAF8F5;
+}
+
+.customizer-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.customizer-header-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid var(--border-subtle);
+  background-color: #F3F0EB;
+}
+
+.customizer-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-accent-pink);
+  background-color: var(--color-accent-pink-subtle);
+  padding: 3px 8px;
+  border-radius: 9999px;
+  margin-bottom: 4px;
+}
+
+.customizer-header-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin: 0 0 2px 0;
+  line-height: 1.25;
+}
+
+.customizer-header-baseprice {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.customizer-header-baseprice strong {
+  color: var(--text-dark);
+}
+
+.customizer-close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  background-color: #FFFFFF;
+  color: var(--text-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.customizer-close-btn:hover {
+  background-color: #F3F4F6;
+  color: var(--text-dark);
+  transform: rotate(90deg);
+}
+
+/* Cuerpo con Scroll */
+.customizer-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  flex: 1;
+}
+
+/* Secciones */
+.customizer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.customizer-section-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.customizer-step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  font-size: 0.8rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.customizer-section-title {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin: 0 0 2px 0;
+}
+
+.customizer-section-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.customizer-section-sub.alert-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: #475569;
+  margin-top: 4px;
+}
+
+/* SECCIÓN 1: Chips de Gama / Calidad */
+.grid-quality {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.chip-button {
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chip-button:hover {
+  border-color: #CBD5E1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.chip-button.is-active {
+  border-color: var(--color-primary);
+  background-color: #FAF8F5;
+  box-shadow: 0 4px 14px rgba(49, 46, 74, 0.12);
+}
+
+/* Chip PREMIUM cuando está activo: Verde como solicitó el usuario */
+.chip-button.chip-quality-premium.is-active.is-green {
+  border-color: #22C55E;
+  background-color: #F0FDF4;
+  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.2);
+}
+
+.chip-content-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip-label-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background-color: #E2E8F0;
+  color: #475569;
+  letter-spacing: 0.4px;
+}
+
+.chip-label-badge.green-badge {
+  background-color: #DCFCE7;
+  color: #15803D;
+}
+
+.chip-title {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.chip-price {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.chip-price.green-text {
+  color: #16A34A;
+}
+
+.chip-features {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-body);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.chip-check-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chip-check-indicator.green-indicator {
+  background-color: #22C55E;
+}
+
+/* SECCIÓN 2: Medidas (Chips) */
+.customizer-chips-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.chip-size-btn {
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 14px 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chip-size-btn:hover {
+  border-color: #CBD5E1;
+  transform: translateY(-2px);
+}
+
+.chip-size-btn.is-selected {
+  border-color: var(--color-primary);
+  background-color: #FAF8F5;
+  box-shadow: 0 4px 12px rgba(49, 46, 74, 0.1);
+}
+
+.chip-size-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.chip-size-dim {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.chip-size-type {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.chip-size-price-tag {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.price-included {
+  color: #16A34A;
+}
+
+.price-extra {
+  color: var(--color-accent-pink);
+}
+
+.chip-size-checked {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SECCIÓN 3: Colchones */
+.customizer-mattress-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chip-mattress-card {
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
+}
+
+.chip-mattress-card:hover:not(:disabled) {
+  border-color: #CBD5E1;
+  transform: translateX(3px);
+}
+
+.chip-mattress-card.is-active {
+  border-color: var(--color-accent-pink);
+  background-color: var(--color-accent-pink-subtle);
+  box-shadow: 0 3px 10px rgba(212, 107, 132, 0.15);
+}
+
+.chip-mattress-card.is-disabled {
+  opacity: 0.45;
+  background-color: #F9FAFB;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.mattress-card-left {
+  flex: 1;
+}
+
+.mattress-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+
+.mattress-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.mattress-card-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-accent-pink);
+}
+
+.mattress-price {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--color-accent-pink);
+  white-space: nowrap;
+}
+
+.mattress-price.included {
+  color: #16A34A;
+}
+
+.mattress-price.disabled-text {
+  color: #9CA3AF;
+}
+
+/* SECCIÓN 4: Colores */
+.customizer-colors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.chip-color-btn {
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.chip-color-btn:hover {
+  border-color: #CBD5E1;
+  transform: translateY(-1px);
+}
+
+.chip-color-btn.is-active {
+  border-color: var(--color-primary);
+  background-color: #FAF8F5;
+  box-shadow: 0 3px 8px rgba(49, 46, 74, 0.1);
+}
+
+.color-swatch-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+}
+
+.color-name {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  flex: 1;
+}
+
+.color-check-icon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* SECCIÓN 5: Adicionales del mueble */
+.customizer-addons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.chip-addon-btn {
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
+}
+
+.chip-addon-btn:hover {
+  border-color: #CBD5E1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+.chip-addon-btn.is-active {
+  border-color: var(--color-primary);
+  background-color: #FAF8F5;
+  box-shadow: 0 4px 12px rgba(49, 46, 74, 0.1);
+}
+
+.addon-btn-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.chip-addon-btn.is-active .addon-btn-checkbox {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.addon-btn-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.addon-btn-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.3;
+}
+
+.addon-btn-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.addon-btn-price {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--color-accent-pink);
+  white-space: nowrap;
+}
+
+/* Footer Fijo */
+.customizer-modal-footer {
+  padding: 16px 24px;
+  background-color: #FFFFFF;
+  border-top: 1px solid var(--border-subtle);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.customizer-footer-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footer-summary-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.summary-pill {
+  font-size: 0.75rem;
+  background-color: #F1F5F9;
+  color: #334155;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.summary-pill.highlight {
+  background-color: var(--color-accent-pink-subtle);
+  color: var(--color-accent-pink);
+}
+
+.summary-pill.addon-count {
+  background-color: #FEF3C7;
+  color: #B45309;
+  font-weight: 700;
+}
+
+.footer-total-price-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.total-price-caption {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.total-price-number {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--color-accent-pink);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.customizer-footer-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.btn-customizer-add-cart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  padding: 13px 20px;
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(49, 46, 74, 0.25);
+}
+
+.btn-customizer-add-cart:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-customizer-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--color-whatsapp-subtle);
+  color: var(--color-whatsapp);
+  border: 1.5px solid var(--color-whatsapp);
+  padding: 13px 20px;
+  border-radius: var(--radius-full);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-customizer-whatsapp:hover {
+  background-color: var(--color-whatsapp);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+/* Responsividad para Móviles */
+@media (max-width: 640px) {
+  .customizer-modal-content {
+    max-height: 96vh;
+    border-radius: 20px;
+  }
+
+  .customizer-modal-header {
+    padding: 14px 16px;
+  }
+
+  .customizer-modal-body {
+    padding: 16px;
+    gap: 22px;
+  }
+
+  .grid-quality {
+    grid-template-columns: 1fr;
+  }
+
+  .customizer-chips-row {
+    grid-template-columns: 1fr;
+  }
+
+  .customizer-addons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .customizer-footer-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-total-price-box {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .customizer-footer-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

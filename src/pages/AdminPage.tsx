@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, Tag, Layers, Building2, Download, LogOut, ExternalLink, LucideIcon } from 'lucide-react';
+import { Package, Tag, Layers, Building2, Download, LogOut, ExternalLink, LucideIcon, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBusiness } from '../context/BusinessContext';
 import logoImg from '../assets/logo.png';
@@ -8,6 +8,7 @@ import AdminLogin from '../components/admin/AdminLogin';
 import ProductManager from '../components/admin/ProductManager';
 import CategoryManager from '../components/admin/CategoryManager';
 import AddonManager from '../components/admin/AddonManager';
+import CustomizerSettings from '../components/admin/CustomizerSettings';
 import BusinessSettings from '../components/admin/BusinessSettings';
 import BackupRestore from '../components/admin/BackupRestore';
 
@@ -30,8 +31,9 @@ export default function AdminPage() {
 
   const navTabs: NavTab[] = [
     { id: 'products', label: 'Productos', icon: Package },
+    { id: 'customizer', label: 'Personalizador', icon: Sparkles },
     { id: 'categories', label: 'Categorías', icon: Tag },
-    { id: 'addons', label: 'Adicionales', icon: Layers },
+    { id: 'addons', label: 'Adicionales Sueltos', icon: Layers },
     { id: 'business', label: 'Identidad & WhatsApp', icon: Building2 },
     { id: 'backup', label: 'Respaldo JSON', icon: Download },
   ];
@@ -184,6 +186,7 @@ export default function AdminPage() {
           }}
         >
           {activeTab === 'products' && <ProductManager />}
+          {activeTab === 'customizer' && <CustomizerSettings />}
           {activeTab === 'categories' && <CategoryManager />}
           {activeTab === 'addons' && <AddonManager />}
           {activeTab === 'business' && <BusinessSettings />}

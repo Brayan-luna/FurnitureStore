@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { storageService } from '../services/storageService';
-import { Product, Category, AddonItem } from '../types';
+import { Product, Category, AddonItem, CustomizerConfig } from '../types';
 
 export interface ProductContextValue {
   products: Product[];
   categories: Category[];
   addons: AddonItem[];
+  customizerConfig: CustomizerConfig;
   selectedCategoryId: string;
   setSelectedCategoryId: (id: string) => void;
   filteredProducts: Product[];
@@ -17,6 +18,8 @@ export interface ProductContextValue {
   deleteAddon: (id: string) => void;
   addCategory: (category: Omit<Category, 'id'> & { id?: string }) => Category;
   deleteCategory: (id: string) => void;
+  updateCustomizerConfig: (updates: Partial<CustomizerConfig>) => void;
+  resetCustomizerConfig: () => void;
   resetAllProducts: () => void;
 }
 
@@ -26,6 +29,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>(() => storageService.getProducts());
   const [categories, setCategories] = useState<Category[]>(() => storageService.getCategories());
   const [addons, setAddons] = useState<AddonItem[]>(() => storageService.getAddons());
+  const [customizerConfig, setCustomizerConfig] = useState<CustomizerConfig>(() => storageService.getCustomizerConfig());
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('todas');
 
   const addProduct = (newProduct: Omit<Product, 'id'> & { id?: string }): Product => {
@@ -74,7 +78,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     storageService.saveAddons(updated);
   };
 
-  const addCategory = (category: Omit<Category, 'id'> & { id?: string }): Category => {
+  const addCategory = (category: Omit<Category, 'id'> & { id?: string }) => {
     const catWithId: Category = {
       ...category,
       id: category.id || `cat-${Date.now()}`
@@ -95,11 +99,30 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateCustomizerConfig = (updates: Partial<CustomizerConfig>) => {
+    const updated: CustomizerConfig = {
+      ...customizerConfig,
+      ...updates,
+      quality: {
+        ...customizerConfig.quality,
+        ...(updates.quality || {})
+      }
+    };
+    setCustomizerConfig(updated);
+    storageService.saveCustomizerConfig(updated);
+  };
+
+  const resetCustomizerConfig = () => {
+    storageService.resetToDefaults();
+    setCustomizerConfig(storageService.getCustomizerConfig());
+  };
+
   const resetAllProducts = () => {
     storageService.resetToDefaults();
     setProducts(storageService.getProducts());
     setCategories(storageService.getCategories());
     setAddons(storageService.getAddons());
+    setCustomizerConfig(storageService.getCustomizerConfig());
     setSelectedCategoryId('todas');
   };
 
@@ -114,6 +137,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
         products,
         categories,
         addons,
+        customizerConfig,
         selectedCategoryId,
         setSelectedCategoryId,
         filteredProducts,
@@ -125,6 +149,8 @@ export function ProductProvider({ children }: { children: ReactNode }) {
         deleteAddon,
         addCategory,
         deleteCategory,
+        updateCustomizerConfig,
+        resetCustomizerConfig,
         resetAllProducts
       }}
     >
@@ -140,3 +166,4 @@ export function useProducts(): ProductContextValue {
   }
   return context;
 }
+

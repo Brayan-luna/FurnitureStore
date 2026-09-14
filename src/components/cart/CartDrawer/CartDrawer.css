@@ -153,6 +153,25 @@
   color: var(--text-dark);
 }
 
+.cart-detail-tag.tag-premium {
+  background-color: #DCFCE7;
+  color: #15803D;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 800;
+}
+
+.cart-customization-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background-color: #FAF8F5;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-top: 4px;
+  border: 1px solid var(--border-subtle);
+}
+
 .btn-quick-edit-link {
   display: inline-flex;
   align-items: center;

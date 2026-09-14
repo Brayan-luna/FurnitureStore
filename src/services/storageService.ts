@@ -1,7 +1,8 @@
 import { initialProducts, initialCategories } from '../config/initialProducts';
 import { initialBusinessConfig } from '../config/initialBusiness';
 import { initialAddons } from '../config/initialAddons';
-import { Product, Category, BusinessConfig, AddonItem } from '../types';
+import { initialCustomizerConfig } from '../config/initialCustomizer';
+import { Product, Category, BusinessConfig, AddonItem, CustomizerConfig } from '../types';
 
 const STORAGE_KEYS = {
   PRODUCTS: 'furniture_store_products_v1',
@@ -9,6 +10,7 @@ const STORAGE_KEYS = {
   ADDONS: 'furniture_store_addons_v1',
   BUSINESS: 'furniture_store_business_v1',
   AUTH: 'furniture_store_admin_session_v1',
+  CUSTOMIZER: 'furniture_store_customizer_v1',
 };
 
 export const storageService = {
@@ -122,6 +124,38 @@ export const storageService = {
     }
   },
 
+  // --- PERSONALIZADOR ÁRMALA COMO QUIERAS ---
+  getCustomizerConfig: (): CustomizerConfig => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.CUSTOMIZER);
+      if (stored) {
+        const parsed = JSON.parse(stored) as CustomizerConfig;
+        return {
+          ...initialCustomizerConfig,
+          ...parsed,
+          quality: {
+            ...initialCustomizerConfig.quality,
+            ...(parsed.quality || {})
+          }
+        };
+      }
+    } catch (e) {
+      console.error('Error reading customizer config from storage', e);
+    }
+    localStorage.setItem(STORAGE_KEYS.CUSTOMIZER, JSON.stringify(initialCustomizerConfig));
+    return initialCustomizerConfig;
+  },
+
+  saveCustomizerConfig: (config: CustomizerConfig): boolean => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.CUSTOMIZER, JSON.stringify(config));
+      return true;
+    } catch (e) {
+      console.error('Error saving customizer config to storage', e);
+      return false;
+    }
+  },
+
   // --- AUTENTICACIÓN ADMIN ---
   getAuthSession: (): { username: string } | null => {
     try {
@@ -157,5 +191,7 @@ export const storageService = {
     localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(initialCategories));
     localStorage.setItem(STORAGE_KEYS.ADDONS, JSON.stringify(initialAddons));
     localStorage.setItem(STORAGE_KEYS.BUSINESS, JSON.stringify(initialBusinessConfig));
+    localStorage.setItem(STORAGE_KEYS.CUSTOMIZER, JSON.stringify(initialCustomizerConfig));
   }
 };
+

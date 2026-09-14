@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product, ProductTypeOption, ProductAdditionalOption, CartItem, LastAddedItem, CartContextValue, AddonItem } from '../types';
+import { Product, ProductTypeOption, ProductAdditionalOption, CartItem, LastAddedItem, CartContextValue, AddonItem, SelectedCustomization } from '../types';
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
 
@@ -31,11 +31,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     selectedType?: ProductTypeOption,
     selectedAdditional?: ProductAdditionalOption,
     unitPrice?: number,
-    quantity = 1
+    quantity = 1,
+    customization?: SelectedCustomization
   ) => {
     const typeId = selectedType?.id || 'standard';
     const addId = selectedAdditional?.id || 'none';
-    const cartItemId = `${product.id}-${typeId}-${addId}`;
+    const addonIds = customization?.addons ? customization.addons.map((a) => a.id).sort().join(',') : '';
+    const cartItemId = customization
+      ? `${product.id}-${customization.quality}-${customization.size.id}-${customization.mattress?.id || 'sin-colchon'}-${customization.color?.id || 'sin-color'}-${addonIds}`
+      : `${product.id}-${typeId}-${addId}`;
     const price = unitPrice ?? product.basePrice;
 
     setItems((prevItems) => {
@@ -54,6 +58,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             imageUrl: product.imageUrl,
             selectedType,
             selectedAdditional,
+            customization,
             unitPrice: price,
             quantity
           }
@@ -63,8 +68,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setLastAddedItem({
       name: product.name,
-      typeName: selectedType?.name,
-      addName: selectedAdditional?.name,
+      typeName: customization ? `${customization.quality} • ${customization.size.name}` : selectedType?.name,
+      addName: customization?.mattress ? customization.mattress.name : selectedAdditional?.name,
       price
     });
 

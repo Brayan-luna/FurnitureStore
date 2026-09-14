@@ -67,6 +67,71 @@ export interface AddonItem {
   price: number;
   category?: string;
   imageUrl?: string;
+  active?: boolean;
+}
+
+export interface CustomizerQualityItem {
+  name: string;
+  wood: string;
+  finish: string;
+  standardMeasure?: string;
+  priceModifier: number;
+}
+
+export interface CustomizerQualityConfig {
+  plus: CustomizerQualityItem;
+  premium: CustomizerQualityItem;
+}
+
+export interface CustomizerSizeOption {
+  id: string;
+  name: string;
+  label: string;
+  dimension: string;
+  priceModifier: number;
+  active?: boolean;
+}
+
+export interface CustomizerMattressOption {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  compatibleSizes: string[];
+  active?: boolean;
+}
+
+export interface CustomizerColorOption {
+  id: string;
+  name: string;
+  hex: string;
+  active?: boolean;
+}
+
+export interface CustomizerAddonOption {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  active?: boolean;
+}
+
+export interface CustomizerConfig {
+  quality: CustomizerQualityConfig;
+  sizes: CustomizerSizeOption[];
+  mattresses: CustomizerMattressOption[];
+  colors: CustomizerColorOption[];
+  addons: CustomizerAddonOption[];
+}
+
+export interface SelectedCustomization {
+  quality: 'PLUS' | 'PREMIUM';
+  qualityModifier: number;
+  size: CustomizerSizeOption;
+  mattress?: CustomizerMattressOption | null;
+  color?: CustomizerColorOption;
+  addons: CustomizerAddonOption[];
+  totalPrice: number;
 }
 
 export interface CartItem {
@@ -76,6 +141,7 @@ export interface CartItem {
   imageUrl: string;
   selectedType?: ProductTypeOption;
   selectedAdditional?: ProductAdditionalOption;
+  customization?: SelectedCustomization;
   unitPrice: number;
   quantity: number;
   isAddon?: boolean;
@@ -95,7 +161,8 @@ export interface CartContextValue {
     selectedType?: ProductTypeOption,
     selectedAdditional?: ProductAdditionalOption,
     unitPrice?: number,
-    quantity?: number
+    quantity?: number,
+    customization?: SelectedCustomization
   ) => void;
   addAddonToCart: (addon: AddonItem, quantity?: number) => void;
   removeFromCart: (cartItemId: string) => void;
@@ -120,6 +187,7 @@ export interface ProductContextType {
   products: Product[];
   categories: Category[];
   addons: AddonItem[];
+  customizerConfig: CustomizerConfig;
   addProduct: (product: Omit<Product, 'id'>) => Product;
   updateProduct: (id: string, updatedData: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
@@ -129,8 +197,10 @@ export interface ProductContextType {
   addCategory: (category: Omit<Category, 'id'>) => Category;
   updateCategory: (id: string, updatedData: Partial<Category>) => void;
   deleteCategory: (id: string) => void;
+  updateCustomizerConfig: (updates: Partial<CustomizerConfig>) => void;
+  resetCustomizerConfig: () => void;
   resetToDefaults: () => void;
-  loadCustomData: (data: { products?: Product[]; categories?: Category[]; addons?: AddonItem[] }) => void;
+  loadCustomData: (data: { products?: Product[]; categories?: Category[]; addons?: AddonItem[]; customizerConfig?: CustomizerConfig }) => void;
 }
 
 export interface BusinessContextType {
@@ -145,3 +215,4 @@ export interface AuthContextType {
   login: (username: string, password: string) => boolean;
   logout: () => void;
 }
+
