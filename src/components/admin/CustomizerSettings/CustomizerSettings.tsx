@@ -211,20 +211,86 @@ export default function CustomizerSettings() {
       <div className="settings-panel-box">
         <div className="panel-box-header">
           <ShieldCheck size={18} color="var(--color-primary)" />
-          <h4>1. Líneas de Fabricación (PLUS y PREMIUM)</h4>
+          <h4>1. Líneas de Fabricación y Acabado (PLUS y PREMIUM)</h4>
         </div>
+
+        {/* Textos de cabecera de la sección */}
+        <div className="section-header-edit-grid">
+          <div className="subcard-field">
+            <label>Título de la sección:</label>
+            <input
+              type="text"
+              value={config.quality?.sectionTitle || ''}
+              placeholder="Línea de Fabricación y Acabado"
+              onChange={(e) =>
+                setConfig((prev) => ({
+                  ...prev,
+                  quality: { ...prev.quality, sectionTitle: e.target.value }
+                }))
+              }
+            />
+          </div>
+          <div className="subcard-field">
+            <label>Subtítulo o texto explicativo:</label>
+            <input
+              type="text"
+              value={config.quality?.sectionSubtitle || ''}
+              placeholder="La base de todas es PLUS. Si eliges PREMIUM, se activa en verde con laca en poliuretano."
+              onChange={(e) =>
+                setConfig((prev) => ({
+                  ...prev,
+                  quality: { ...prev.quality, sectionSubtitle: e.target.value }
+                }))
+              }
+            />
+          </div>
+        </div>
+
         <div className="panel-box-grid-2">
           {/* PLUS */}
           <div className="panel-subcard">
             <div className="subcard-title-row">
-              <span className="badge-plus">BASE</span>
-              <strong>Línea PLUS</strong>
+              <span className="badge-plus">{config.quality?.plus?.badge || 'BASE INCLUIDA'}</span>
+              <strong>{config.quality?.plus?.name || 'Línea PLUS'}</strong>
             </div>
+
+            <div className="subcard-field-row-2">
+              <div className="subcard-field">
+                <label>Nombre / Título:</label>
+                <input
+                  type="text"
+                  value={config.quality?.plus?.name || ''}
+                  placeholder="PLUS"
+                  onChange={(e) =>
+                    setConfig((prev) => ({
+                      ...prev,
+                      quality: { ...prev.quality, plus: { ...prev.quality.plus, name: e.target.value } }
+                    }))
+                  }
+                />
+              </div>
+              <div className="subcard-field">
+                <label>Etiqueta / Badge:</label>
+                <input
+                  type="text"
+                  value={config.quality?.plus?.badge || ''}
+                  placeholder="BASE INCLUIDA"
+                  onChange={(e) =>
+                    setConfig((prev) => ({
+                      ...prev,
+                      quality: { ...prev.quality, plus: { ...prev.quality.plus, badge: e.target.value } }
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
             <div className="subcard-field">
-              <label>Madera:</label>
+              <label>Característica 1 (Madera):</label>
               <input
                 type="text"
-                value={config.quality.plus.wood}
+                value={config.quality?.plus?.wood || ''}
+                placeholder="Madera de roble seleccionada"
                 onChange={(e) =>
                   setConfig((prev) => ({
                     ...prev,
@@ -233,11 +299,13 @@ export default function CustomizerSettings() {
                 }
               />
             </div>
+
             <div className="subcard-field">
-              <label>Pintura / Acabado:</label>
+              <label>Característica 2 (Pintura / Acabado):</label>
               <input
                 type="text"
-                value={config.quality.plus.finish}
+                value={config.quality?.plus?.finish || ''}
+                placeholder="Pintura catalizada de alta adherencia"
                 onChange={(e) =>
                   setConfig((prev) => ({
                     ...prev,
@@ -246,6 +314,22 @@ export default function CustomizerSettings() {
                 }
               />
             </div>
+
+            <div className="subcard-field">
+              <label>Característica 3 (Medida / Detalle estándar):</label>
+              <input
+                type="text"
+                value={config.quality?.plus?.standardMeasure || ''}
+                placeholder="Medida estándar: 1 × 190 cm"
+                onChange={(e) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    quality: { ...prev.quality, plus: { ...prev.quality.plus, standardMeasure: e.target.value } }
+                  }))
+                }
+              />
+            </div>
+
             <div className="subcard-field">
               <label>Incremento de precio:</label>
               <input type="text" value="$0 (Incluido en precio base)" disabled />
@@ -255,41 +339,47 @@ export default function CustomizerSettings() {
           {/* PREMIUM */}
           <div className="panel-subcard highlight-premium">
             <div className="subcard-title-row">
-              <span className="badge-premium">ALTA GAMA</span>
-              <strong>Línea PREMIUM</strong>
+              <span className="badge-premium">{config.quality?.premium?.badge || 'ALTA GAMA'}</span>
+              <strong>{config.quality?.premium?.name || 'Línea PREMIUM'}</strong>
             </div>
-            <div className="subcard-field">
-              <label>Madera:</label>
-              <input
-                type="text"
-                value={config.quality.premium.wood}
-                onChange={(e) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    quality: { ...prev.quality, premium: { ...prev.quality.premium, wood: e.target.value } }
-                  }))
-                }
-              />
+
+            <div className="subcard-field-row-2">
+              <div className="subcard-field">
+                <label>Nombre / Título:</label>
+                <input
+                  type="text"
+                  value={config.quality?.premium?.name || ''}
+                  placeholder="PREMIUM"
+                  onChange={(e) =>
+                    setConfig((prev) => ({
+                      ...prev,
+                      quality: { ...prev.quality, premium: { ...prev.quality.premium, name: e.target.value } }
+                    }))
+                  }
+                />
+              </div>
+              <div className="subcard-field">
+                <label>Etiqueta / Badge:</label>
+                <input
+                  type="text"
+                  value={config.quality?.premium?.badge || ''}
+                  placeholder="ALTA GAMA"
+                  onChange={(e) =>
+                    setConfig((prev) => ({
+                      ...prev,
+                      quality: { ...prev.quality, premium: { ...prev.quality.premium, badge: e.target.value } }
+                    }))
+                  }
+                />
+              </div>
             </div>
+
             <div className="subcard-field">
-              <label>Pintura / Acabado:</label>
-              <input
-                type="text"
-                value={config.quality.premium.finish}
-                onChange={(e) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    quality: { ...prev.quality, premium: { ...prev.quality.premium, finish: e.target.value } }
-                  }))
-                }
-              />
-            </div>
-            <div className="subcard-field">
-              <label>Incremento de precio sobre PLUS ($):</label>
+              <label>Incremento de precio sobre PLUS ($ COP):</label>
               <input
                 type="number"
                 step="10000"
-                value={config.quality.premium.priceModifier}
+                value={config.quality?.premium?.priceModifier || 0}
                 onChange={(e) =>
                   setConfig((prev) => ({
                     ...prev,
@@ -300,7 +390,52 @@ export default function CustomizerSettings() {
                   }))
                 }
               />
-              <span className="field-hint">Actual: +{formatPrice(config.quality.premium.priceModifier)}</span>
+              <span className="field-hint">Actual: +{formatPrice(config.quality?.premium?.priceModifier)}</span>
+            </div>
+
+            <div className="subcard-field">
+              <label>Característica 1 (Madera):</label>
+              <input
+                type="text"
+                value={config.quality?.premium?.wood || ''}
+                placeholder="Madera de roble seleccionada"
+                onChange={(e) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    quality: { ...prev.quality, premium: { ...prev.quality.premium, wood: e.target.value } }
+                  }))
+                }
+              />
+            </div>
+
+            <div className="subcard-field">
+              <label>Característica 2 (Pintura / Acabado):</label>
+              <input
+                type="text"
+                value={config.quality?.premium?.finish || ''}
+                placeholder="Pintura en poliuretano (alta resistencia y acabado sedoso)"
+                onChange={(e) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    quality: { ...prev.quality, premium: { ...prev.quality.premium, finish: e.target.value } }
+                  }))
+                }
+              />
+            </div>
+
+            <div className="subcard-field">
+              <label>Característica 3 (Acabado / Durabilidad):</label>
+              <input
+                type="text"
+                value={config.quality?.premium?.standardMeasure || ''}
+                placeholder="Acabado sedoso y mayor durabilidad anti-rayones"
+                onChange={(e) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    quality: { ...prev.quality, premium: { ...prev.quality.premium, standardMeasure: e.target.value } }
+                  }))
+                }
+              />
             </div>
           </div>
         </div>

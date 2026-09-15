@@ -5,8 +5,9 @@ import { useProducts } from '../../../context/ProductContext';
 import { useBusiness } from '../../../context/BusinessContext';
 import { formatPrice, getDiscountedPrice } from '../../../utils/formatters';
 import { whatsappService } from '../../../services/whatsappService';
-import Select from '../../common/Select';
-import { CartItem, Product } from '../../../types';
+import CustomizerModal from '../../catalog/CustomizerModal';
+import FurnitureCustomizerModal from '../../catalog/FurnitureCustomizerModal';
+import { CartItem, Product, ProductTypeOption, ProductAdditionalOption } from '../../../types';
 import './CartDrawer.css';
 
 export default function CartDrawer() {
@@ -16,7 +17,8 @@ export default function CartDrawer() {
     closeCart,
     removeFromCart,
     updateQuantity,
-    updateCartItem,
+    updateCustomizedCartItem,
+    updateFurnitureCartItem,
     totalPrice,
     totalItems
   } = useCart();
@@ -28,40 +30,57 @@ export default function CartDrawer() {
   const [customerCity, setCustomerCity] = useState('');
   const [customerNotes, setCustomerNotes] = useState('');
 
-  // Estado para la edición inline de un ítem
-  const [editingItemId, setEditingItemId] = useState<string | null>(null);
-  const [tempTypeId, setTempTypeId] = useState<string>('');
-  const [tempAddId, setTempAddId] = useState<string>('');
+  // Estado para la edición con Modales
+  const [editingCartItem, setEditingCartItem] = useState<CartItem | null>(null);
+  const [customizerProduct, setCustomizerProduct] = useState<Product | null>(null);
+  const [isBedCustomizerOpen, setIsBedCustomizerOpen] = useState(false);
+  const [isFurnitureCustomizerOpen, setIsFurnitureCustomizerOpen] = useState(false);
 
   if (!isCartOpen) return null;
 
   const handleStartEdit = (item: CartItem, product: Product) => {
-    setEditingItemId(item.cartItemId);
-    setTempTypeId(item.selectedType?.id || product.types?.[0]?.id || '');
-    setTempAddId(item.selectedAdditional?.id || product.additionals?.[0]?.id || '');
-  };
+    setEditingCartItem(item);
+    setCustomizerProduct(product);
 
-  const handleCancelEdit = () => {
-    setEditingItemId(null);
-    setTempTypeId('');
-    setTempAddId('');
-  };
-
-  const handleSaveEdit = (item: CartItem, product: Product) => {
-    const selectedTypeObj = product.types?.find((t) => t.id === tempTypeId) || item.selectedType;
-    const selectedAddObj = product.additionals?.find((a) => a.id === tempAddId) || item.selectedAdditional;
-
-    if (!selectedTypeObj || !selectedAddObj) {
-      handleCancelEdit();
-      return;
+    if (product.customizationType === 'custom_variants') {
+      setIsFurnitureCustomizerOpen(true);
+    } else {
+      setIsBedCustomizerOpen(true);
     }
+  };
 
-    const basePrice = getDiscountedPrice(product.basePrice, product.discountAmount);
-    const newUnitPrice =
-      basePrice + (selectedTypeObj.priceModifier || 0) + (selectedAddObj.priceModifier || 0);
+  const handleCloseModals = () => {
+    setIsBedCustomizerOpen(false);
+    setIsFurnitureCustomizerOpen(false);
+    setEditingCartItem(null);
+    setCustomizerProduct(null);
+  };
 
-    updateCartItem(item.cartItemId, selectedTypeObj, selectedAddObj, newUnitPrice);
-    handleCancelEdit();
+  const handleSaveBedCustomization = (newCustomization: any) => {
+    if (editingCartItem) {
+      updateCustomizedCartItem(
+        editingCartItem.cartItemId,
+        newCustomization,
+        newCustomization.totalPrice
+      );
+    }
+    handleCloseModals();
+  };
+
+  const handleSaveFurnitureCustomization = (
+    newType: ProductTypeOption,
+    newAdditionals: ProductAdditionalOption[],
+    newUnitPrice: number
+  ) => {
+    if (editingCartItem) {
+      updateFurnitureCartItem(
+        editingCartItem.cartItemId,
+        newType,
+        newAdditionals,
+        newUnitPrice
+      );
+    }
+    handleCloseModals();
   };
 
   const whatsappCheckoutUrl = whatsappService.generateCartOrderUrl(
@@ -97,7 +116,7 @@ export default function CartDrawer() {
               <ShoppingBag size={54} style={{ margin: '0 auto 16px auto', display: 'block', opacity: 0.3 }} />
               <h4 style={{ color: 'var(--text-dark)', marginBottom: '8px' }}>Tu pedido está vacío</h4>
               <p style={{ fontSize: '0.88rem', marginBottom: '20px' }}>
-                Explora el catálogo y agrega tu cama cuna favorita con los tipos y adicionales que prefieras.
+                Explora el catálogo y agrega tus productos favoritos con las opciones que prefieras.
               </p>
               <button
                 type="button"
@@ -112,99 +131,6 @@ export default function CartDrawer() {
             <div className="cart-items-list">
               {items.map((item) => {
                 const product = products.find((p) => p.id === item.productId);
-                const isEditing = editingItemId === item.cartItemId;
-
-                // Si está en edición, calculamos el precio preliminar
-                let previewUnitPrice = item.unitPrice;
-                if (isEditing && product) {
-                  const selType = product.types?.find((t) => t.id === tempTypeId) || item.selectedType;
-                  const selAdd = product.additionals?.find((a) => a.id === tempAddId) || item.selectedAdditional;
-                  const effBase = getDiscountedPrice(product.basePrice, product.discountAmount);
-                  previewUnitPrice = effBase + (selType?.priceModifier || 0) + (selAdd?.priceModifier || 0);
-                }
-
-                if (isEditing && product) {
-                  return (
-                    <div key={item.cartItemId} className="cart-item-card is-editing">
-                      <div className="cart-item-edit-wrapper">
-                        <div className="edit-card-header">
-                          <div className="edit-card-header-left">
-                            <img
-                              src={item.imageUrl || '/images/cama-cuna-plus.jpg'}
-                              alt={item.name}
-                              className="cart-item-edit-thumb"
-                            />
-                            <div>
-                              <span className="edit-badge-tag">Modificando opciones</span>
-                              <h4 className="cart-item-title" style={{ margin: 0 }}>{item.name}</h4>
-                            </div>
-                          </div>
-                          <button
-                            type="button"
-                            className="btn-cancel-edit-icon"
-                            onClick={handleCancelEdit}
-                            title="Cancelar edición"
-                            aria-label="Cancelar cambios"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-
-                        <div className="edit-panel-body">
-                          <div className="edit-panel-field">
-                            <label className="edit-field-label">Tipo de cama / Medida:</label>
-                            <Select
-                              value={tempTypeId}
-                              onChange={setTempTypeId}
-                              options={product.types || []}
-                              showPriceModifier
-                              ariaLabel="Seleccionar tipo de cama"
-                            />
-                          </div>
-
-                          <div className="edit-panel-field">
-                            <label className="edit-field-label">Adicional incluido:</label>
-                            <Select
-                              value={tempAddId}
-                              onChange={setTempAddId}
-                              options={product.additionals || []}
-                              showPriceModifier
-                              ariaLabel="Seleccionar adicional"
-                            />
-                          </div>
-
-                          <div className="edit-pricing-summary">
-                            <div className="edit-price-line">
-                              <span className="edit-price-caption">Precio unitario:</span>
-                              <span className="edit-price-number">{formatPrice(previewUnitPrice)}</span>
-                            </div>
-                            <div className="edit-price-subtotal">
-                              Subtotal ({item.quantity} {item.quantity > 1 ? 'unidades' : 'unidad'}): <strong>{formatPrice(previewUnitPrice * item.quantity)}</strong>
-                            </div>
-                          </div>
-
-                          <div className="edit-panel-footer-actions">
-                            <button
-                              type="button"
-                              className="btn-save-cart-edit"
-                              onClick={() => handleSaveEdit(item, product)}
-                            >
-                              <Check size={16} />
-                              <span>Guardar cambios</span>
-                            </button>
-                            <button
-                              type="button"
-                              className="btn-cancel-cart-edit"
-                              onClick={handleCancelEdit}
-                            >
-                              Cancelar
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
 
                 return (
                   <div key={item.cartItemId} className="cart-item-card">
@@ -222,7 +148,7 @@ export default function CartDrawer() {
                               type="button"
                               onClick={() => handleStartEdit(item, product)}
                               className="cart-action-btn edit"
-                              title="Cambiar tipo o adicionales"
+                              title="Modificar personalización del producto"
                               aria-label={`Editar ${item.name}`}
                             >
                               <Pencil size={14} />
@@ -270,15 +196,7 @@ export default function CartDrawer() {
                                 </span>
                               </div>
                             )}
-                          </div>
-                        ) : (
-                          <>
-                            <div className="cart-detail-line">
-                              <span className="cart-detail-tag">Tipo:</span> {item.selectedType?.name || 'Estándar'}
-                            </div>
-                            <div className="cart-detail-line">
-                              <span className="cart-detail-tag">Adicional:</span> {item.selectedAdditional?.name || 'Solita'}
-                            </div>
+
                             {product && (
                               <button
                                 type="button"
@@ -286,7 +204,36 @@ export default function CartDrawer() {
                                 onClick={() => handleStartEdit(item, product)}
                               >
                                 <Pencil size={12} />
-                                <span>Cambiar tipo o adicional</span>
+                                <span>Modificar opciones (Gama, medida, colchón...)</span>
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <>
+                            <div className="cart-detail-line">
+                              <span className="cart-detail-tag">Opción:</span> {item.selectedType?.name || 'Estándar'}
+                            </div>
+                            {Boolean(item.selectedAdditionals && item.selectedAdditionals.length > 0) && (
+                              <div className="cart-detail-line">
+                                <span className="cart-detail-tag">Adicionales:</span>{' '}
+                                <span style={{ color: 'var(--text-dark)', fontWeight: 600 }}>
+                                  {item.selectedAdditionals!.map((a) => a.name).join(', ')}
+                                </span>
+                              </div>
+                            )}
+                            {!item.selectedAdditionals && item.selectedAdditional && item.selectedAdditional.id !== 'none' && (
+                              <div className="cart-detail-line">
+                                <span className="cart-detail-tag">Adicional:</span> {item.selectedAdditional.name}
+                              </div>
+                            )}
+                            {product && (
+                              <button
+                                type="button"
+                                className="btn-quick-edit-link"
+                                onClick={() => handleStartEdit(item, product)}
+                              >
+                                <Pencil size={12} />
+                                <span>Personalizar opciones</span>
                               </button>
                             )}
                           </>
@@ -364,6 +311,31 @@ export default function CartDrawer() {
           </div>
         )}
       </aside>
+
+      {/* Modal interactivo para Camas Cunas (5 pasos) */}
+      {isBedCustomizerOpen && customizerProduct && (
+        <CustomizerModal
+          product={customizerProduct}
+          isOpen={isBedCustomizerOpen}
+          onClose={handleCloseModals}
+          initialCustomization={editingCartItem?.customization}
+          isEditing={true}
+          onSaveCustomization={handleSaveBedCustomization}
+        />
+      )}
+
+      {/* Modal interactivo para Muebles (Peinadoras, Cómodas, etc.) */}
+      {isFurnitureCustomizerOpen && customizerProduct && (
+        <FurnitureCustomizerModal
+          product={customizerProduct}
+          isOpen={isFurnitureCustomizerOpen}
+          onClose={handleCloseModals}
+          initialType={editingCartItem?.selectedType}
+          initialAdditionals={editingCartItem?.selectedAdditionals}
+          isEditing={true}
+          onSaveCustomization={handleSaveFurnitureCustomization}
+        />
+      )}
     </>
   );
 }

@@ -90,11 +90,15 @@ export const whatsappService = {
         message += `   • *Subtotal:* ${itemSubtotal}\n\n`;
       } else {
         const typeLabel = item.selectedType?.name || 'Estándar';
-        const addLabel = item.selectedAdditional?.name || 'Sin adicionales';
+        const addLabel = item.selectedAdditionals && item.selectedAdditionals.length > 0
+          ? item.selectedAdditionals.map((a) => a.name).join(', ')
+          : item.selectedAdditional?.name || 'Sin adicionales';
 
         message += `🛋️ *${item.quantity}x ${productName}*\n`;
-        message += `   • *Tipo:* ${typeLabel}\n`;
-        message += `   • *Adicional:* ${addLabel}\n`;
+        message += `   • *Opción / Medida:* ${typeLabel}\n`;
+        if (addLabel && addLabel !== 'Sin adicionales' && addLabel !== 'Solita') {
+          message += `   • *Adicionales:* ${addLabel}\n`;
+        }
         message += `   • *Subtotal:* ${itemSubtotal}\n\n`;
       }
     });

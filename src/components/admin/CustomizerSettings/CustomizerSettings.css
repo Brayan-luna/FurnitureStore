@@ -147,6 +147,24 @@
   background-color: #FAF8F5;
 }
 
+/* Header de sección editable */
+.section-header-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 14px;
+  background-color: #FFFFFF;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 8px;
+}
+
+.subcard-field-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 /* Grid de Gama */
 .panel-box-grid-2 {
   display: grid;
@@ -517,6 +535,14 @@
   height: 18px;
   border-radius: 50%;
   border: 1px solid rgba(0,0,0,0.15);
+}
+
+@media (max-width: 768px) {
+  .section-header-edit-grid,
+  .panel-box-grid-2,
+  .subcard-field-row-2 {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 .color-chip-name {

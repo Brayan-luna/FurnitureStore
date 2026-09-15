@@ -2,7 +2,10 @@ import { CustomizerConfig } from '../types';
 
 export const initialCustomizerConfig: CustomizerConfig = {
   quality: {
+    sectionTitle: 'Línea de Fabricación y Acabado',
+    sectionSubtitle: 'La base de todas es PLUS. Si eliges PREMIUM, se activa en verde con laca en poliuretano.',
     plus: {
+      badge: 'BASE INCLUIDA',
       name: 'PLUS',
       wood: 'Madera de roble seleccionada',
       finish: 'Pintura catalizada de alta adherencia',
@@ -10,10 +13,11 @@ export const initialCustomizerConfig: CustomizerConfig = {
       priceModifier: 0
     },
     premium: {
+      badge: 'ALTA GAMA',
       name: 'PREMIUM',
       wood: 'Madera de roble seleccionada',
       finish: 'Pintura en poliuretano (alta resistencia y acabado sedoso)',
-      standardMeasure: 'Medida estándar: 1 × 190 cm',
+      standardMeasure: 'Acabado sedoso y mayor durabilidad anti-rayones',
       priceModifier: 300000
     }
   },

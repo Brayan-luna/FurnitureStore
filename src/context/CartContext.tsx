@@ -33,14 +33,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     selectedAdditional?: ProductAdditionalOption,
     unitPrice?: number,
     quantity = 1,
-    customization?: SelectedCustomization
+    customization?: SelectedCustomization,
+    selectedAdditionals?: ProductAdditionalOption[]
   ) => {
     const typeId = selectedType?.id || 'standard';
     const addId = selectedAdditional?.id || 'none';
+    const addArrayIds = selectedAdditionals && selectedAdditionals.length > 0
+      ? selectedAdditionals.map((a) => a.id).sort().join(',')
+      : '';
     const addonIds = customization?.addons ? customization.addons.map((a) => a.id).sort().join(',') : '';
     const cartItemId = customization
       ? `${product.id}-${customization.quality}-${customization.size.id}-${customization.mattress?.id || 'sin-colchon'}-${customization.color?.id || 'sin-color'}-${addonIds}`
-      : `${product.id}-${typeId}-${addId}`;
+      : `${product.id}-${typeId}-${addId}-${addArrayIds}`;
     const price = unitPrice ?? getDiscountedPrice(product.basePrice, product.discountAmount);
 
     setItems((prevItems) => {
@@ -59,6 +63,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             imageUrl: product.imageUrl,
             selectedType,
             selectedAdditional,
+            selectedAdditionals,
             customization,
             unitPrice: price,
             quantity
@@ -67,10 +72,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    const additionalsSummary = selectedAdditionals && selectedAdditionals.length > 0
+      ? selectedAdditionals.map((a) => a.name).join(', ')
+      : selectedAdditional?.name;
+
     setLastAddedItem({
       name: product.name,
       typeName: customization ? `${customization.quality} • ${customization.size.name}` : selectedType?.name,
-      addName: customization?.mattress ? customization.mattress.name : selectedAdditional?.name,
+      addName: customization?.mattress ? customization.mattress.name : additionalsSummary,
       price
     });
 
@@ -181,6 +190,112 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const updateFurnitureCartItem = (
+    oldCartItemId: string,
+    newType: ProductTypeOption,
+    newAdditionals: ProductAdditionalOption[],
+    newUnitPrice: number
+  ) => {
+    setItems((prevItems) => {
+      const targetItem = prevItems.find((it) => it.cartItemId === oldCartItemId);
+      if (!targetItem) return prevItems;
+
+      const addArrayIds = newAdditionals.map((a) => a.id).sort().join(',');
+      const newCartItemId = `${targetItem.productId}-${newType.id}-none-${addArrayIds}`;
+
+      if (newCartItemId === oldCartItemId) {
+        return prevItems.map((it) =>
+          it.cartItemId === oldCartItemId
+            ? {
+                ...it,
+                selectedType: newType,
+                selectedAdditionals: newAdditionals,
+                unitPrice: newUnitPrice
+              }
+            : it
+        );
+      }
+
+      const existingSameItemIndex = prevItems.findIndex((it) => it.cartItemId === newCartItemId);
+      if (existingSameItemIndex > -1) {
+        return prevItems
+          .filter((it) => it.cartItemId !== oldCartItemId)
+          .map((it) =>
+            it.cartItemId === newCartItemId
+              ? { ...it, quantity: it.quantity + targetItem.quantity }
+              : it
+          );
+      }
+
+      return prevItems.map((it) =>
+        it.cartItemId === oldCartItemId
+          ? {
+              ...it,
+              cartItemId: newCartItemId,
+              selectedType: newType,
+              selectedAdditionals: newAdditionals,
+              unitPrice: newUnitPrice
+            }
+          : it
+      );
+    });
+  };
+
+  const updateCustomizedCartItem = (
+    oldCartItemId: string,
+    newCustomization: SelectedCustomization,
+    newUnitPrice: number
+  ) => {
+    setItems((prevItems) => {
+      const targetItem = prevItems.find((it) => it.cartItemId === oldCartItemId);
+      if (!targetItem) return prevItems;
+
+      const addonIds = newCustomization.addons
+        ? newCustomization.addons.map((a) => a.id).sort().join(',')
+        : '';
+      const newCartItemId = `${targetItem.productId}-${newCustomization.quality}-${newCustomization.size.id}-${newCustomization.mattress?.id || 'sin-colchon'}-${newCustomization.color?.id || 'sin-color'}-${addonIds}`;
+
+      if (newCartItemId === oldCartItemId) {
+        return prevItems.map((it) =>
+          it.cartItemId === oldCartItemId
+            ? {
+                ...it,
+                customization: newCustomization,
+                unitPrice: newUnitPrice
+              }
+            : it
+        );
+      }
+
+      const existingIndex = prevItems.findIndex((it) => it.cartItemId === newCartItemId);
+      if (existingIndex > -1) {
+        return prevItems
+          .filter((it) => it.cartItemId !== oldCartItemId)
+          .map((it) =>
+            it.cartItemId === newCartItemId
+              ? {
+                  ...it,
+                  customization: newCustomization,
+                  unitPrice: newUnitPrice,
+                  quantity: it.quantity + targetItem.quantity
+                }
+              : it
+          );
+      }
+
+      return prevItems.map((it) =>
+        it.cartItemId === oldCartItemId
+          ? {
+              ...it,
+              cartItemId: newCartItemId,
+              customization: newCustomization,
+              unitPrice: newUnitPrice
+            }
+          : it
+      );
+    });
+  };
+
   const removeFromCart = (cartItemId: string) => {
     setItems((prev) => prev.filter((item) => item.cartItemId !== cartItemId));
   };
@@ -188,6 +303,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = () => {
     setItems([]);
   };
+
+  const openCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
@@ -197,18 +315,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         items,
         addToCart,
+        addAddonToCart,
         removeFromCart,
         updateQuantity,
         updateCartItem,
+        updateCustomizedCartItem,
+        updateFurnitureCartItem,
         clearCart,
         totalItems,
         totalPrice,
         isCartOpen,
         setIsCartOpen,
-        openCart: () => setIsCartOpen(true),
-        closeCart: () => setIsCartOpen(false),
-        lastAddedItem,
-        addAddonToCart
+        openCart,
+        closeCart,
+        lastAddedItem
       }}
     >
       {children}

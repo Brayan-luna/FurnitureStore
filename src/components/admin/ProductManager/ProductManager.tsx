@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useProducts } from '../../../context/ProductContext';
-import { Plus, Edit2, Trash2, Layers, CheckSquare, Tag } from 'lucide-react';
+import { Plus, Edit2, Trash2, Sparkles, Sliders, Package, Tag } from 'lucide-react';
 import ProductFormModal from '../ProductFormModal';
 import { formatPrice, getDiscountedPrice } from '../../../utils/formatters';
 import { Product } from '../../../types';
@@ -84,16 +84,24 @@ export default function ProductManager() {
                 </p>
               </div>
 
-              {/* Variantes configuradas */}
+              {/* Vinculación con Personalizador */}
               <div className="product-manager-variants">
-                <div className="product-manager-variant-stat">
-                  <Layers size={14} />
-                  <span>{product.types?.length || 0} tipos</span>
-                </div>
-                <div className="product-manager-variant-stat">
-                  <CheckSquare size={14} />
-                  <span>{product.additionals?.length || 0} adicionales</span>
-                </div>
+                {product.customizationType === 'custom_variants' ? (
+                  <div className="product-manager-customizer-badge variants">
+                    <Sliders size={13} />
+                    <span>{product.types?.length || 1} opc. • {product.additionals?.length || 0} adic.</span>
+                  </div>
+                ) : product.customizationType === 'simple' ? (
+                  <div className="product-manager-customizer-badge simple">
+                    <Package size={13} />
+                    <span>Venta Directa</span>
+                  </div>
+                ) : (
+                  <div className="product-manager-customizer-badge bed">
+                    <Sparkles size={13} />
+                    <span>Personalizador Cama (5 pasos)</span>
+                  </div>
+                )}
               </div>
 
               {/* Precio base y Descuento */}

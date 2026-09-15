@@ -110,15 +110,32 @@
 
 .product-manager-variants {
   display: flex;
-  gap: 16px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  align-items: center;
 }
 
-.product-manager-variant-stat {
-  display: flex;
+.product-manager-customizer-badge {
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  background-color: #F3EEF9;
+  color: var(--color-primary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid #E2D9F3;
+}
+
+.product-manager-customizer-badge.variants {
+  background-color: #EFF6FF;
+  color: #2563EB;
+  border-color: #BFDBFE;
+}
+
+.product-manager-customizer-badge.simple {
+  background-color: #F0FDF4;
+  color: #16A34A;
+  border-color: #BBF7D0;
 }
 
 .product-manager-price-col {

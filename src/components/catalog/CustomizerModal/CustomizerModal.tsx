@@ -19,9 +19,19 @@ export interface CustomizerModalProps {
   product: Product;
   isOpen: boolean;
   onClose: () => void;
+  initialCustomization?: SelectedCustomization | null;
+  onSaveCustomization?: (customization: SelectedCustomization) => void;
+  isEditing?: boolean;
 }
 
-export default function CustomizerModal({ product, isOpen, onClose }: CustomizerModalProps) {
+export default function CustomizerModal({
+  product,
+  isOpen,
+  onClose,
+  initialCustomization = null,
+  onSaveCustomization,
+  isEditing = false
+}: CustomizerModalProps) {
   const { addToCart, openCart } = useCart();
   const { business } = useBusiness();
   const { customizerConfig, addons: globalAddons } = useProducts();
@@ -36,15 +46,23 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
   // Inicializar / resetear al abrir
   useEffect(() => {
     if (isOpen) {
-      setQuality('PLUS');
-      const firstActiveSize = customizerConfig.sizes?.find((s) => s.active !== false)?.id || '1x190';
-      setSelectedSizeId(firstActiveSize);
-      setSelectedMattressId('sin-colchon');
-      const firstActiveColor = customizerConfig.colors?.find((c) => c.active !== false)?.id || 'blanco';
-      setSelectedColorId(firstActiveColor);
-      setSelectedAddonIds([]);
+      if (initialCustomization) {
+        setQuality(initialCustomization.quality || 'PLUS');
+        setSelectedSizeId(initialCustomization.size?.id || '1x190');
+        setSelectedMattressId(initialCustomization.mattress ? initialCustomization.mattress.id : 'sin-colchon');
+        setSelectedColorId(initialCustomization.color?.id || 'blanco');
+        setSelectedAddonIds(initialCustomization.addons ? initialCustomization.addons.map((a) => a.id) : []);
+      } else {
+        setQuality('PLUS');
+        const firstActiveSize = customizerConfig.sizes?.find((s) => s.active !== false)?.id || '1x190';
+        setSelectedSizeId(firstActiveSize);
+        setSelectedMattressId('sin-colchon');
+        const firstActiveColor = customizerConfig.colors?.find((c) => c.active !== false)?.id || 'blanco';
+        setSelectedColorId(firstActiveColor);
+        setSelectedAddonIds([]);
+      }
     }
-  }, [isOpen, customizerConfig]);
+  }, [isOpen, initialCustomization, customizerConfig]);
 
   if (!isOpen) return null;
 
@@ -118,10 +136,15 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
     totalPrice
   };
 
-  const handleAddToCart = () => {
-    addToCart(product, undefined, undefined, totalPrice, 1, currentCustomization);
-    onClose();
-    openCart();
+  const handleSaveAction = () => {
+    if (isEditing && onSaveCustomization) {
+      onSaveCustomization(currentCustomization);
+      onClose();
+    } else {
+      addToCart(product, undefined, undefined, totalPrice, 1, currentCustomization);
+      onClose();
+      openCart();
+    }
   };
 
   const whatsappUrl = whatsappService.generateCustomizedProductUrl(
@@ -150,7 +173,7 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
             <div>
               <div className="customizer-header-badge">
                 <Sparkles size={13} />
-                <span>Personalizador Exclusivo</span>
+                <span>{isEditing ? 'Modificando Selección' : 'Personalizador Exclusivo'}</span>
               </div>
               <h2 id="customizer-title" className="customizer-header-title">
                 {product.name}
@@ -186,9 +209,12 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
             <div className="customizer-section-title-row">
               <span className="customizer-step-num">1</span>
               <div>
-                <h3 className="customizer-section-title">Línea de Fabricación y Acabado</h3>
+                <h3 className="customizer-section-title">
+                  {customizerConfig.quality?.sectionTitle || 'Línea de Fabricación y Acabado'}
+                </h3>
                 <p className="customizer-section-sub">
-                  La base de todas es PLUS. Si eliges PREMIUM, se activa en verde con laca en poliuretano.
+                  {customizerConfig.quality?.sectionSubtitle ||
+                    'La base de todas es PLUS. Si eliges PREMIUM, se activa en verde con laca en poliuretano.'}
                 </p>
               </div>
             </div>
@@ -201,16 +227,26 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
                 onClick={() => setQuality('PLUS')}
               >
                 <div className="chip-content-top">
-                  <span className="chip-label-badge">BASE INCLUIDA</span>
-                  <span className="chip-title">PLUS</span>
+                  <span className="chip-label-badge">
+                    {customizerConfig.quality?.plus?.badge || 'BASE INCLUIDA'}
+                  </span>
+                  <span className="chip-title">
+                    {customizerConfig.quality?.plus?.name || 'PLUS'}
+                  </span>
                   <span className="chip-price">+$0</span>
                 </div>
                 <div className="chip-features">
-                  <div>• {customizerConfig.quality?.plus?.wood || 'Fabricada en madera de roble'}</div>
-                  <div>• {customizerConfig.quality?.plus?.finish || 'Pintura catalizada'}</div>
-                  <div>• Medida estándar: 1 × 190 cm</div>
+                  <div>• {customizerConfig.quality?.plus?.wood || 'Madera de roble seleccionada'}</div>
+                  <div>• {customizerConfig.quality?.plus?.finish || 'Pintura catalizada de alta adherencia'}</div>
+                  {customizerConfig.quality?.plus?.standardMeasure && (
+                    <div>• {customizerConfig.quality.plus.standardMeasure}</div>
+                  )}
                 </div>
-                {quality === 'PLUS' && <div className="chip-check-indicator"><Check size={14} strokeWidth={3} /></div>}
+                {quality === 'PLUS' && (
+                  <div className="chip-check-indicator">
+                    <Check size={14} strokeWidth={3} />
+                  </div>
+                )}
               </button>
 
               {/* Chip PREMIUM */}
@@ -220,16 +256,22 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
                 onClick={() => setQuality('PREMIUM')}
               >
                 <div className="chip-content-top">
-                  <span className="chip-label-badge green-badge">ALTA GAMA</span>
-                  <span className="chip-title">PREMIUM</span>
+                  <span className="chip-label-badge green-badge">
+                    {customizerConfig.quality?.premium?.badge || 'ALTA GAMA'}
+                  </span>
+                  <span className="chip-title">
+                    {customizerConfig.quality?.premium?.name || 'PREMIUM'}
+                  </span>
                   <span className="chip-price green-text">
                     +{formatPrice(Number(customizerConfig.quality?.premium?.priceModifier) || 300000)}
                   </span>
                 </div>
                 <div className="chip-features">
-                  <div>• {customizerConfig.quality?.premium?.wood || 'Fabricada en madera de roble'}</div>
-                  <div>• {customizerConfig.quality?.premium?.finish || 'Pintura en poliuretano (alta resistencia)'}</div>
-                  <div>• Acabado sedoso y mayor durabilidad anti-rayones</div>
+                  <div>• {customizerConfig.quality?.premium?.wood || 'Madera de roble seleccionada'}</div>
+                  <div>• {customizerConfig.quality?.premium?.finish || 'Pintura en poliuretano (alta resistencia y acabado sedoso)'}</div>
+                  {customizerConfig.quality?.premium?.standardMeasure && (
+                    <div>• {customizerConfig.quality.premium.standardMeasure}</div>
+                  )}
                 </div>
                 {quality === 'PREMIUM' && (
                   <div className="chip-check-indicator green-indicator">
@@ -456,10 +498,19 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
             <button
               type="button"
               className="btn-customizer-add-cart"
-              onClick={handleAddToCart}
+              onClick={handleSaveAction}
             >
-              <ShoppingBag size={18} />
-              <span>Agregar al pedido</span>
+              {isEditing ? (
+                <>
+                  <Check size={18} strokeWidth={2.5} />
+                  <span>Guardar cambios</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingBag size={18} />
+                  <span>Agregar al pedido</span>
+                </>
+              )}
             </button>
 
             <a

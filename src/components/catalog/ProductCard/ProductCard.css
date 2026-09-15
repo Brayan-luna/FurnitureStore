@@ -138,6 +138,22 @@
   transition: transform 0.2s ease;
 }
 
+.btn-open-customizer.furniture {
+  background: linear-gradient(135deg, #F0F7FF 0%, #EBF3FC 100%);
+  border-color: #BFDBFE;
+}
+
+.btn-open-customizer.furniture:hover {
+  border-color: #2563EB;
+  background: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.16);
+}
+
+.btn-open-customizer-icon.furniture {
+  background-color: #DBEAFE;
+  color: #2563EB;
+}
+
 .btn-open-customizer:hover .btn-open-customizer-icon {
   transform: scale(1.1) rotate(5deg);
 }

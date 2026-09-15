@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, MessageCircle, Sparkles, Tag } from 'lucide-react';
+import { Plus, MessageCircle, Sparkles, Sliders, Tag, ShoppingBag } from 'lucide-react';
 import Badge from '../../common/Badge';
 import CustomizerModal from '../CustomizerModal';
+import FurnitureCustomizerModal from '../FurnitureCustomizerModal';
 import { formatPrice, getDiscountedPrice } from '../../../utils/formatters';
 import { useCart } from '../../../context/CartContext';
 import { useBusiness } from '../../../context/BusinessContext';
@@ -17,11 +18,15 @@ export interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart, openCart } = useCart();
   const { business } = useBusiness();
-  const { categories, customizerConfig } = useProducts();
+  const { categories } = useProducts();
 
-  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+  const [isBedCustomizerOpen, setIsBedCustomizerOpen] = useState(false);
+  const [isFurnitureCustomizerOpen, setIsFurnitureCustomizerOpen] = useState(false);
 
-  // Precio base de la cama y descuento
+  // Modo de producto
+  const mode = product.customizationType || 'bed_customizer';
+
+  // Precio base y descuento
   const basePrice = Number(product.basePrice) || 0;
   const discountAmount = Number(product.discountAmount) || 0;
   const hasDiscount = discountAmount > 0;
@@ -29,21 +34,28 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   // Encontrar información de la categoría
   const category = categories.find((c) => c.id === product.categoryId) || {
-    name: 'Plus',
+    name: 'General',
     icon: 'cloud',
     color: '#3B82F6',
     bg: 'rgba(224, 242, 254, 0.9)'
   };
 
-  const handleQuickAddToCart = () => {
-    // Si no ha personalizado, abre el personalizador para que elija a su gusto
-    setIsCustomizerOpen(true);
+  const handleActionClick = () => {
+    if (mode === 'bed_customizer') {
+      setIsBedCustomizerOpen(true);
+    } else if (mode === 'custom_variants') {
+      setIsFurnitureCustomizerOpen(true);
+    } else {
+      // Simple / Venta directa
+      addToCart(product, undefined, undefined, finalBasePrice, 1);
+      openCart();
+    }
   };
 
   const quickWhatsappUrl = whatsappService.generateQuickProductUrl(
     product,
-    { id: '1x190', name: '1 × 190 cm (Sencilla)', priceModifier: 0 },
-    { id: 'sin-colchon', name: 'Sin colchón', priceModifier: 0 },
+    product.types?.[0] || { id: 'standard', name: 'Estándar', priceModifier: 0 },
+    product.additionals?.[0] || { id: 'none', name: 'Sin adicionales', priceModifier: 0 },
     finalBasePrice,
     business
   );
@@ -80,24 +92,46 @@ export default function ProductCard({ product }: ProductCardProps) {
           <h3 className="product-card-title">{product.name}</h3>
           <p className="product-card-description">{product.description}</p>
 
-          {/* Botón Destacado: Ármala como quieras */}
-          <button
-            type="button"
-            className="btn-open-customizer"
-            onClick={() => setIsCustomizerOpen(true)}
-            aria-label={`Personalizar ${product.name}`}
-          >
-            <div className="btn-open-customizer-left">
-              <span className="btn-open-customizer-icon">
-                <Sparkles size={16} />
-              </span>
-              <div className="btn-open-customizer-text">
-                <span className="btn-open-customizer-title">Ármala como quieras</span>
-                <span className="btn-open-customizer-sub">Gama PLUS/PREMIUM, medidas, colchones y mejoras</span>
+          {/* Botón Destacado según el Tipo de Producto */}
+          {mode === 'bed_customizer' && (
+            <button
+              type="button"
+              className="btn-open-customizer"
+              onClick={() => setIsBedCustomizerOpen(true)}
+              aria-label={`Personalizar ${product.name}`}
+            >
+              <div className="btn-open-customizer-left">
+                <span className="btn-open-customizer-icon">
+                  <Sparkles size={16} />
+                </span>
+                <div className="btn-open-customizer-text">
+                  <span className="btn-open-customizer-title">Ármala como quieras</span>
+                  <span className="btn-open-customizer-sub">Gama PLUS/PREMIUM, medidas, colchones y mejoras</span>
+                </div>
               </div>
-            </div>
-            <span className="btn-open-customizer-arrow">→</span>
-          </button>
+              <span className="btn-open-customizer-arrow">→</span>
+            </button>
+          )}
+
+          {mode === 'custom_variants' && (
+            <button
+              type="button"
+              className="btn-open-customizer furniture"
+              onClick={() => setIsFurnitureCustomizerOpen(true)}
+              aria-label={`Personalizar ${product.name}`}
+            >
+              <div className="btn-open-customizer-left">
+                <span className="btn-open-customizer-icon furniture">
+                  <Sliders size={16} />
+                </span>
+                <div className="btn-open-customizer-text">
+                  <span className="btn-open-customizer-title">Personalizar Mueble</span>
+                  <span className="btn-open-customizer-sub">Elige medidas y accesorios a tu gusto</span>
+                </div>
+              </div>
+              <span className="btn-open-customizer-arrow">→</span>
+            </button>
+          )}
 
           {/* Fila de precio base */}
           <div className="product-price-container">
@@ -122,11 +156,20 @@ export default function ProductCard({ product }: ProductCardProps) {
             <button
               type="button"
               className="btn-add-to-cart"
-              onClick={handleQuickAddToCart}
-              aria-label={`Personalizar y agregar ${product.name} al pedido`}
+              onClick={handleActionClick}
+              aria-label={`Agregar ${product.name} al pedido`}
             >
-              <Plus size={18} strokeWidth={2.5} />
-              <span>Personalizar y Pedir</span>
+              {mode === 'simple' ? (
+                <>
+                  <ShoppingBag size={18} strokeWidth={2.5} />
+                  <span>Agregar al Pedido</span>
+                </>
+              ) : (
+                <>
+                  <Plus size={18} strokeWidth={2.5} />
+                  <span>Personalizar y Pedir</span>
+                </>
+              )}
             </button>
 
             <a
@@ -143,12 +186,23 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </article>
 
-      {/* Modal de personalización interactivo */}
-      <CustomizerModal
-        product={product}
-        isOpen={isCustomizerOpen}
-        onClose={() => setIsCustomizerOpen(false)}
-      />
+      {/* Modal de personalización de Camas (5 pasos) */}
+      {mode === 'bed_customizer' && (
+        <CustomizerModal
+          product={product}
+          isOpen={isBedCustomizerOpen}
+          onClose={() => setIsBedCustomizerOpen(false)}
+        />
+      )}
+
+      {/* Modal de personalización de Muebles específicos (Peinadoras, Cómodas, etc.) */}
+      {mode === 'custom_variants' && (
+        <FurnitureCustomizerModal
+          product={product}
+          isOpen={isFurnitureCustomizerOpen}
+          onClose={() => setIsFurnitureCustomizerOpen(false)}
+        />
+      )}
     </>
   );
 }

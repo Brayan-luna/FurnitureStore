@@ -1,3 +1,5 @@
+export type CustomizationType = 'bed_customizer' | 'custom_variants' | 'simple';
+
 export interface ProductTypeOption {
   id: string;
   name: string;
@@ -18,6 +20,7 @@ export interface Product {
   basePrice: number;
   discountAmount?: number;
   imageUrl: string;
+  customizationType?: CustomizationType;
   types: ProductTypeOption[];
   additionals: ProductAdditionalOption[];
 }
@@ -72,6 +75,7 @@ export interface AddonItem {
 }
 
 export interface CustomizerQualityItem {
+  badge?: string;
   name: string;
   wood: string;
   finish: string;
@@ -80,6 +84,8 @@ export interface CustomizerQualityItem {
 }
 
 export interface CustomizerQualityConfig {
+  sectionTitle?: string;
+  sectionSubtitle?: string;
   plus: CustomizerQualityItem;
   premium: CustomizerQualityItem;
 }
@@ -142,6 +148,7 @@ export interface CartItem {
   imageUrl: string;
   selectedType?: ProductTypeOption;
   selectedAdditional?: ProductAdditionalOption;
+  selectedAdditionals?: ProductAdditionalOption[];
   customization?: SelectedCustomization;
   unitPrice: number;
   quantity: number;
@@ -163,7 +170,8 @@ export interface CartContextValue {
     selectedAdditional?: ProductAdditionalOption,
     unitPrice?: number,
     quantity?: number,
-    customization?: SelectedCustomization
+    customization?: SelectedCustomization,
+    selectedAdditionals?: ProductAdditionalOption[]
   ) => void;
   addAddonToCart: (addon: AddonItem, quantity?: number) => void;
   removeFromCart: (cartItemId: string) => void;
@@ -172,6 +180,17 @@ export interface CartContextValue {
     oldCartItemId: string,
     newType: ProductTypeOption,
     newAdditional: ProductAdditionalOption,
+    newUnitPrice: number
+  ) => void;
+  updateCustomizedCartItem: (
+    oldCartItemId: string,
+    newCustomization: SelectedCustomization,
+    newUnitPrice: number
+  ) => void;
+  updateFurnitureCartItem: (
+    oldCartItemId: string,
+    newType: ProductTypeOption,
+    newAdditionals: ProductAdditionalOption[],
     newUnitPrice: number
   ) => void;
   clearCart: () => void;
