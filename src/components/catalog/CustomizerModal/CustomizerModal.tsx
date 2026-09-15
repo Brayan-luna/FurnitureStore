@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { X, Check, Sparkles, MessageCircle, ShoppingBag, ShieldCheck, Info } from 'lucide-react';
-import { Product, SelectedCustomization } from '../../../types';
-import { useProducts } from '../../../context/ProductContext';
+import { formatPrice, getDiscountedPrice } from '../../../utils/formatters';
 import { useCart } from '../../../context/CartContext';
 import { useBusiness } from '../../../context/BusinessContext';
-import { formatPrice } from '../../../utils/formatters';
+import { useProducts } from '../../../context/ProductContext';
 import { whatsappService } from '../../../services/whatsappService';
+import {
+  Product,
+  SelectedCustomization,
+  CustomizerSizeOption,
+  CustomizerMattressOption,
+  CustomizerColorOption,
+  CustomizerAddonOption
+} from '../../../types';
 import './CustomizerModal.css';
 
 export interface CustomizerModalProps {
@@ -15,25 +22,25 @@ export interface CustomizerModalProps {
 }
 
 export default function CustomizerModal({ product, isOpen, onClose }: CustomizerModalProps) {
-  const { customizerConfig } = useProducts();
   const { addToCart, openCart } = useCart();
   const { business } = useBusiness();
+  const { customizerConfig, addons: globalAddons } = useProducts();
 
-  // Estados de configuración
+  // Estados de Personalización
   const [quality, setQuality] = useState<'PLUS' | 'PREMIUM'>('PLUS');
   const [selectedSizeId, setSelectedSizeId] = useState<string>('1x190');
   const [selectedMattressId, setSelectedMattressId] = useState<string>('sin-colchon');
-  const [selectedColorId, setSelectedColorId] = useState<string>('blanco-nieve');
+  const [selectedColorId, setSelectedColorId] = useState<string>('blanco');
   const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
 
   // Inicializar / resetear al abrir
   useEffect(() => {
     if (isOpen) {
       setQuality('PLUS');
-      const firstActiveSize = customizerConfig.sizes.find((s) => s.active !== false)?.id || '1x190';
+      const firstActiveSize = customizerConfig.sizes?.find((s) => s.active !== false)?.id || '1x190';
       setSelectedSizeId(firstActiveSize);
       setSelectedMattressId('sin-colchon');
-      const firstActiveColor = customizerConfig.colors.find((c) => c.active !== false)?.id || 'blanco-nieve';
+      const firstActiveColor = customizerConfig.colors?.find((c) => c.active !== false)?.id || 'blanco';
       setSelectedColorId(firstActiveColor);
       setSelectedAddonIds([]);
     }
@@ -41,12 +48,21 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
 
   if (!isOpen) return null;
 
-  // Resoluciones de datos activos
-  const activeSizes = customizerConfig.sizes.filter((s) => s.active !== false);
-  const activeMattresses = customizerConfig.mattresses.filter((m) => m.active !== false);
-  const activeColors = customizerConfig.colors.filter((c) => c.active !== false);
-  const activeAddons = customizerConfig.addons.filter((a) => a.active !== false);
+  // Opciones activas desde la configuración
+  const activeSizes: CustomizerSizeOption[] = (customizerConfig?.sizes || []).filter(
+    (s) => s.active !== false
+  );
+  const activeMattresses: CustomizerMattressOption[] = (
+    customizerConfig?.mattresses || []
+  ).filter((m) => m.active !== false);
+  const activeColors: CustomizerColorOption[] = (customizerConfig?.colors || []).filter(
+    (c) => c.active !== false
+  );
+  const activeAddons: CustomizerAddonOption[] = (customizerConfig?.addons || []).filter(
+    (a) => a.active !== false
+  );
 
+  // Valores seleccionados actuales
   const currentSize = activeSizes.find((s) => s.id === selectedSizeId) || activeSizes[0];
   const currentMattress =
     selectedMattressId === 'sin-colchon'
@@ -55,8 +71,12 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
   const currentColor = activeColors.find((c) => c.id === selectedColorId) || activeColors[0];
   const currentAddons = activeAddons.filter((a) => selectedAddonIds.includes(a.id));
 
-  // Cálculos de precio
-  const basePrice = Number(product.basePrice) || 0;
+  // Cálculos de precio con descuento aplicado
+  const rawBasePrice = Number(product.basePrice) || 0;
+  const discountAmount = Number(product.discountAmount) || 0;
+  const hasDiscount = discountAmount > 0;
+  const basePrice = getDiscountedPrice(rawBasePrice, discountAmount);
+
   const qualityModifier =
     quality === 'PREMIUM' ? Number(customizerConfig.quality?.premium?.priceModifier) || 300000 : 0;
   const sizeModifier = Number(currentSize?.priceModifier) || 0;
@@ -136,7 +156,16 @@ export default function CustomizerModal({ product, isOpen, onClose }: Customizer
                 {product.name}
               </h2>
               <div className="customizer-header-baseprice">
-                Base PLUS: <strong>{formatPrice(basePrice)}</strong>
+                Base PLUS:{' '}
+                {hasDiscount ? (
+                  <>
+                    <span className="customizer-orig-price">{formatPrice(rawBasePrice)}</span>{' '}
+                    <strong>{formatPrice(basePrice)}</strong>
+                    <span className="customizer-discount-badge">-{formatPrice(discountAmount)}</span>
+                  </>
+                ) : (
+                  <strong>{formatPrice(basePrice)}</strong>
+                )}
               </div>
             </div>
           </div>

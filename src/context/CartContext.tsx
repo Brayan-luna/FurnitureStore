@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product, ProductTypeOption, ProductAdditionalOption, CartItem, LastAddedItem, CartContextValue, AddonItem, SelectedCustomization } from '../types';
+import { getDiscountedPrice } from '../utils/formatters';
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
 
@@ -40,7 +41,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const cartItemId = customization
       ? `${product.id}-${customization.quality}-${customization.size.id}-${customization.mattress?.id || 'sin-colchon'}-${customization.color?.id || 'sin-color'}-${addonIds}`
       : `${product.id}-${typeId}-${addId}`;
-    const price = unitPrice ?? product.basePrice;
+    const price = unitPrice ?? getDiscountedPrice(product.basePrice, product.discountAmount);
 
     setItems((prevItems) => {
       const existingIndex = prevItems.findIndex((item) => item.cartItemId === cartItemId);

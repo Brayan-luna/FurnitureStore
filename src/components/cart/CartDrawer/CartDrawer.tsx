@@ -3,7 +3,7 @@ import { X, Trash2, Plus, Minus, MessageCircle, ShoppingBag, Pencil, Check } fro
 import { useCart } from '../../../context/CartContext';
 import { useProducts } from '../../../context/ProductContext';
 import { useBusiness } from '../../../context/BusinessContext';
-import { formatPrice } from '../../../utils/formatters';
+import { formatPrice, getDiscountedPrice } from '../../../utils/formatters';
 import { whatsappService } from '../../../services/whatsappService';
 import Select from '../../common/Select';
 import { CartItem, Product } from '../../../types';
@@ -56,7 +56,7 @@ export default function CartDrawer() {
       return;
     }
 
-    const basePrice = product.basePrice;
+    const basePrice = getDiscountedPrice(product.basePrice, product.discountAmount);
     const newUnitPrice =
       basePrice + (selectedTypeObj.priceModifier || 0) + (selectedAddObj.priceModifier || 0);
 
@@ -119,7 +119,8 @@ export default function CartDrawer() {
                 if (isEditing && product) {
                   const selType = product.types?.find((t) => t.id === tempTypeId) || item.selectedType;
                   const selAdd = product.additionals?.find((a) => a.id === tempAddId) || item.selectedAdditional;
-                  previewUnitPrice = product.basePrice + (selType?.priceModifier || 0) + (selAdd?.priceModifier || 0);
+                  const effBase = getDiscountedPrice(product.basePrice, product.discountAmount);
+                  previewUnitPrice = effBase + (selType?.priceModifier || 0) + (selAdd?.priceModifier || 0);
                 }
 
                 if (isEditing && product) {

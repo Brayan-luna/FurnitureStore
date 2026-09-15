@@ -44,6 +44,86 @@
   font-weight: 700;
 }
 
+/* Descuentos */
+.discount-preview-box {
+  background-color: #FAF8F5;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.discount-presets {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.discount-presets-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.discount-preset-btn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border: 1px solid var(--border-subtle);
+  background: #FFFFFF;
+  color: var(--text-body);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.discount-preset-btn:hover {
+  background: #F1EFEA;
+  border-color: #CBD5E1;
+}
+
+.discount-preset-btn.active {
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-color: var(--color-primary);
+}
+
+.discount-calc-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #E2E8F0;
+  font-size: 0.84rem;
+}
+
+.discount-calc-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dark);
+}
+
+.discount-calc-row strong {
+  color: #16A34A;
+  font-size: 0.98rem;
+}
+
+.discount-calc-savings {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #DC2626;
+  background-color: #FEE2E2;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
 .variant-manager-box {
   padding: 16px;
   background-color: #FAF8F5;

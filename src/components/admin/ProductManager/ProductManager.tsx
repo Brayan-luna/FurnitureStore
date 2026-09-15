@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useProducts } from '../../../context/ProductContext';
-import { Plus, Edit2, Trash2, Layers, CheckSquare } from 'lucide-react';
+import { Plus, Edit2, Trash2, Layers, CheckSquare, Tag } from 'lucide-react';
 import ProductFormModal from '../ProductFormModal';
-import { formatPrice } from '../../../utils/formatters';
+import { formatPrice, getDiscountedPrice } from '../../../utils/formatters';
 import { Product } from '../../../types';
 import './ProductManager.css';
 
@@ -96,12 +96,31 @@ export default function ProductManager() {
                 </div>
               </div>
 
-              {/* Precio base */}
+              {/* Precio base y Descuento */}
               <div className="product-manager-price-col">
-                <span className="product-manager-price-label">PRECIO BASE</span>
-                <strong className="product-manager-price-val">
-                  {formatPrice(product.basePrice)}
-                </strong>
+                <div className="product-manager-price-header">
+                  <span className="product-manager-price-label">PRECIO BASE</span>
+                  {Boolean(product.discountAmount && product.discountAmount > 0) && (
+                    <span className="product-manager-discount-pill">
+                      <Tag size={11} /> -{formatPrice(product.discountAmount)}
+                    </span>
+                  )}
+                </div>
+
+                {Boolean(product.discountAmount && product.discountAmount > 0) ? (
+                  <div className="product-manager-prices-stack">
+                    <span className="product-manager-price-orig">
+                      {formatPrice(product.basePrice)}
+                    </span>
+                    <strong className="product-manager-price-val discounted">
+                      {formatPrice(getDiscountedPrice(product.basePrice, product.discountAmount))}
+                    </strong>
+                  </div>
+                ) : (
+                  <strong className="product-manager-price-val">
+                    {formatPrice(product.basePrice)}
+                  </strong>
+                )}
               </div>
 
               {/* Botones de acción */}

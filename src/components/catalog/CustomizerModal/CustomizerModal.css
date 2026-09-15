@@ -88,10 +88,29 @@
 .customizer-header-baseprice {
   font-size: 0.82rem;
   color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.customizer-orig-price {
+  color: #94A3B8;
+  text-decoration: line-through;
+  font-weight: 500;
 }
 
 .customizer-header-baseprice strong {
   color: var(--text-dark);
+}
+
+.customizer-discount-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #DC2626;
+  background-color: #FEE2E2;
+  padding: 1px 6px;
+  border-radius: 9999px;
 }
 
 .customizer-close-btn {
@@ -269,7 +288,7 @@
 
 .chip-check-indicator {
   position: absolute;
-  top: 12px;
+  bottom: 12px;
   right: 12px;
   width: 22px;
   height: 22px;
@@ -279,10 +298,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 6px rgba(49, 46, 74, 0.25);
 }
 
 .chip-check-indicator.green-indicator {
   background-color: #22C55E;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.35);
 }
 
 /* SECCIÓN 2: Medidas (Chips) */

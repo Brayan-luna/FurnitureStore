@@ -30,6 +30,34 @@
   overflow: hidden;
 }
 
+.product-card-discount-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35);
+  letter-spacing: 0.3px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  animation: pulseDiscount 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseDiscount {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
 .product-card-media img {
   width: 100%;
   height: 100%;
@@ -152,6 +180,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.product-price-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .price-label {
@@ -159,6 +195,28 @@
   font-weight: 800;
   letter-spacing: 0.8px;
   color: var(--text-muted);
+}
+
+.price-discount-pill {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #DC2626;
+  background-color: #FEE2E2;
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+
+.product-price-amount-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.price-original-amount {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94A3B8;
+  text-decoration: line-through;
 }
 
 .price-amount {

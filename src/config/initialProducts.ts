@@ -15,6 +15,7 @@ export const initialProducts: Product[] = [
     description: 'Estructura en madera pino canadiense, pintura catalizada y acabado básico. Corral de 4 barandas con sistema abatible, cajones laterales y baúl.',
     categoryId: 'plus',
     basePrice: 2700000,
+    discountAmount: 150000,
     imageUrl: '/images/cama-cuna-plus.jpg',
     types: [
       { id: 'sencilla', name: 'Sencilla', priceModifier: 0 },

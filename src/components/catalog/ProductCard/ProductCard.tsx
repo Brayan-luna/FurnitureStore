@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, MessageCircle, Sparkles } from 'lucide-react';
+import { Plus, MessageCircle, Sparkles, Tag } from 'lucide-react';
 import Badge from '../../common/Badge';
 import CustomizerModal from '../CustomizerModal';
-import { formatPrice } from '../../../utils/formatters';
+import { formatPrice, getDiscountedPrice } from '../../../utils/formatters';
 import { useCart } from '../../../context/CartContext';
 import { useBusiness } from '../../../context/BusinessContext';
 import { useProducts } from '../../../context/ProductContext';
@@ -21,8 +21,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
 
-  // Precio base de la cama
+  // Precio base de la cama y descuento
   const basePrice = Number(product.basePrice) || 0;
+  const discountAmount = Number(product.discountAmount) || 0;
+  const hasDiscount = discountAmount > 0;
+  const finalBasePrice = getDiscountedPrice(basePrice, discountAmount);
 
   // Encontrar información de la categoría
   const category = categories.find((c) => c.id === product.categoryId) || {
@@ -41,7 +44,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     product,
     { id: '1x190', name: '1 × 190 cm (Sencilla)', priceModifier: 0 },
     { id: 'sin-colchon', name: 'Sin colchón', priceModifier: 0 },
-    basePrice,
+    finalBasePrice,
     business
   );
 
@@ -64,6 +67,12 @@ export default function ProductCard({ product }: ProductCardProps) {
             color={category.color || '#3B82F6'}
             bg={category.bg || 'rgba(224, 242, 254, 0.9)'}
           />
+          {hasDiscount && (
+            <div className="product-card-discount-badge">
+              <Tag size={12} strokeWidth={2.5} />
+              <span>-{formatPrice(discountAmount)}</span>
+            </div>
+          )}
         </div>
 
         {/* Contenido */}
@@ -93,8 +102,18 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Fila de precio base */}
           <div className="product-price-container">
             <div className="product-price-row">
-              <span className="price-label">PRECIO BASE</span>
-              <span className="price-amount">{formatPrice(basePrice)}</span>
+              <div className="product-price-label-wrap">
+                <span className="price-label">PRECIO BASE</span>
+                {hasDiscount && (
+                  <span className="price-discount-pill">-{formatPrice(discountAmount)}</span>
+                )}
+              </div>
+              <div className="product-price-amount-wrap">
+                {hasDiscount && (
+                  <span className="price-original-amount">{formatPrice(basePrice)}</span>
+                )}
+                <span className="price-amount">{formatPrice(finalBasePrice)}</span>
+              </div>
             </div>
           </div>
 

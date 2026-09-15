@@ -5,6 +5,7 @@ import Select from '../../common/Select';
 import { Plus, Trash2 } from 'lucide-react';
 import { useProducts } from '../../../context/ProductContext';
 import { Product, ProductTypeOption, ProductAdditionalOption } from '../../../types';
+import { formatPrice, getDiscountedPrice } from '../../../utils/formatters';
 import './ProductFormModal.css';
 
 const PRESET_IMAGES = [
@@ -27,6 +28,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('plus');
   const [basePrice, setBasePrice] = useState(2700000);
+  const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [imageUrl, setImageUrl] = useState('/images/cama-cuna-plus.jpg');
 
   // Variantes
@@ -47,6 +49,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
       setDescription(initialProduct.description || '');
       setCategoryId(initialProduct.categoryId || 'plus');
       setBasePrice(initialProduct.basePrice || 0);
+      setDiscountAmount(initialProduct.discountAmount || 0);
       setImageUrl(initialProduct.imageUrl || '/images/cama-cuna-plus.jpg');
       setTypes(initialProduct.types?.length ? initialProduct.types : [{ id: 'sencilla', name: 'Sencilla', priceModifier: 0 }]);
       setAdditionals(initialProduct.additionals?.length ? initialProduct.additionals : [{ id: 'solita', name: 'Solita', priceModifier: 0 }]);
@@ -56,6 +59,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
       setDescription('');
       setCategoryId(categories.find(c => c.id !== 'todas')?.id || 'plus');
       setBasePrice(2700000);
+      setDiscountAmount(0);
       setImageUrl('/images/cama-cuna-plus.jpg');
       setTypes([
         { id: 'sencilla', name: 'Sencilla', priceModifier: 0 },
@@ -118,6 +122,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
       description: description.trim(),
       categoryId,
       basePrice: Number(basePrice) || 0,
+      discountAmount: Number(discountAmount) || 0,
       imageUrl: imageUrl.trim() || '/images/cama-cuna-plus.jpg',
       types,
       additionals
@@ -132,6 +137,9 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
   };
 
   const availableCategories = categories.filter((c) => c.id !== 'todas');
+
+  const discountedCalculated = getDiscountedPrice(basePrice, discountAmount);
+  const effectiveSavings = Math.min(basePrice, Math.max(0, Number(discountAmount) || 0));
 
   return (
     <Modal
@@ -187,19 +195,68 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
           />
         </div>
 
-        {/* Precio Base */}
-        <div style={{ marginBottom: '16px' }}>
-          <label className="product-form-label">
-            Precio Base (COP) *
-          </label>
-          <input
-            type="number"
-            className="input-field"
-            value={basePrice}
-            onChange={(e) => setBasePrice(Number(e.target.value))}
-            step="10000"
-            required
-          />
+        {/* Precio Base y Descuento Fijo */}
+        <div className="product-form-grid-equal">
+          <div>
+            <label className="product-form-label">
+              Precio Base (COP) *
+            </label>
+            <input
+              type="number"
+              className="input-field"
+              value={basePrice}
+              onChange={(e) => setBasePrice(Number(e.target.value))}
+              step="10000"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="product-form-label">
+              Descuento Fijo (COP)
+            </label>
+            <input
+              type="number"
+              className="input-field"
+              value={discountAmount || ''}
+              onChange={(e) => {
+                const val = Math.max(0, Number(e.target.value) || 0);
+                setDiscountAmount(val);
+              }}
+              placeholder="0 (Ej: 150000)"
+              min="0"
+              step="10000"
+            />
+          </div>
+        </div>
+
+        {/* Acceso rápido a montos fijos y desglose en vivo */}
+        <div className="discount-preview-box">
+          <div className="discount-presets">
+            <span className="discount-presets-label">Montos sugeridos:</span>
+            {[0, 50000, 100000, 150000, 200000, 300000, 500000].map((amt) => (
+              <button
+                key={amt}
+                type="button"
+                className={`discount-preset-btn ${discountAmount === amt ? 'active' : ''}`}
+                onClick={() => setDiscountAmount(amt)}
+              >
+                {amt === 0 ? 'Sin desc. ($0)' : `-$${amt / 1000}k`}
+              </button>
+            ))}
+          </div>
+
+          {discountAmount > 0 && (
+            <div className="discount-calc-summary">
+              <div className="discount-calc-row">
+                <span>Precio final con descuento:</span>
+                <strong>{formatPrice(discountedCalculated)}</strong>
+              </div>
+              <div className="discount-calc-savings">
+                Descuento de {formatPrice(effectiveSavings)}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Carga de Imagen (Selector de Archivos Móvil/PC o URL) */}

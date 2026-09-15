@@ -17,3 +17,10 @@ export function cleanPhoneNumber(phone?: string | null): string {
   if (!phone) return '';
   return phone.replace(/[^0-9]/g, '');
 }
+
+export function getDiscountedPrice(basePrice: number, discountAmount?: number): number {
+  const numericBase = Number(basePrice) || 0;
+  const numericDiscount = Number(discountAmount) || 0;
+  if (numericDiscount <= 0) return numericBase;
+  return Math.max(0, numericBase - numericDiscount);
+}

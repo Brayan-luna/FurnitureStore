@@ -16,6 +16,7 @@ export interface Product {
   description: string;
   categoryId: string;
   basePrice: number;
+  discountAmount?: number;
   imageUrl: string;
   types: ProductTypeOption[];
   additionals: ProductAdditionalOption[];
