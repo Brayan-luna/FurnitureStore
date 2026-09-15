@@ -12,6 +12,13 @@ export interface ProductAdditionalOption {
   priceModifier: number;
 }
 
+export interface ProductBedCustomizerRules {
+  allowedQualities?: ('PLUS' | 'PREMIUM')[];
+  allowedSizeIds?: string[];
+  allowedAddonIds?: string[];
+  allowedColorIds?: string[];
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -21,6 +28,7 @@ export interface Product {
   discountAmount?: number;
   imageUrl: string;
   customizationType?: CustomizationType;
+  bedRules?: ProductBedCustomizerRules;
   types: ProductTypeOption[];
   additionals: ProductAdditionalOption[];
 }

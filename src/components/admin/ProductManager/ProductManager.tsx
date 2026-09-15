@@ -86,22 +86,33 @@ export default function ProductManager() {
 
               {/* Vinculación con Personalizador */}
               <div className="product-manager-variants">
-                {product.customizationType === 'custom_variants' ? (
-                  <div className="product-manager-customizer-badge variants">
-                    <Sliders size={13} />
-                    <span>{product.types?.length || 1} opc. • {product.additionals?.length || 0} adic.</span>
-                  </div>
-                ) : product.customizationType === 'simple' ? (
-                  <div className="product-manager-customizer-badge simple">
-                    <Package size={13} />
-                    <span>Venta Directa</span>
-                  </div>
-                ) : (
-                  <div className="product-manager-customizer-badge bed">
-                    <Sparkles size={13} />
-                    <span>Personalizador Cama (5 pasos)</span>
-                  </div>
-                )}
+                {(() => {
+                  const isBedCat = ['plus', 'premium', 'tapizada', 'natural'].includes(product.categoryId);
+                  const mode = product.customizationType || (isBedCat ? 'bed_customizer' : 'custom_variants');
+
+                  if (mode === 'custom_variants') {
+                    return (
+                      <div className="product-manager-customizer-badge variants">
+                        <Sliders size={13} />
+                        <span>{product.types?.length || 1} opc. • {product.additionals?.length || 0} adic.</span>
+                      </div>
+                    );
+                  }
+                  if (mode === 'simple') {
+                    return (
+                      <div className="product-manager-customizer-badge simple">
+                        <Package size={13} />
+                        <span>Venta Directa</span>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="product-manager-customizer-badge bed">
+                      <Sparkles size={13} />
+                      <span>Personalizador Cama (5 pasos)</span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Precio base y Descuento */}

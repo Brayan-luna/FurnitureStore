@@ -24,7 +24,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isFurnitureCustomizerOpen, setIsFurnitureCustomizerOpen] = useState(false);
 
   // Modo de producto
-  const mode = product.customizationType || 'bed_customizer';
+  const isBedCat = ['plus', 'premium', 'tapizada', 'natural'].includes(product.categoryId);
+  const mode = product.customizationType || (isBedCat ? 'bed_customizer' : 'custom_variants');
 
   // Precio base y descuento
   const basePrice = Number(product.basePrice) || 0;

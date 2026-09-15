@@ -42,33 +42,25 @@ export default function CustomizerModal({
   const [selectedMattressId, setSelectedMattressId] = useState<string>('sin-colchon');
   const [selectedColorId, setSelectedColorId] = useState<string>('blanco');
   const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
+  // Reglas específicas del producto (Gamas, Medidas y Adicionales permitidos)
+  const allowedQualities: ('PLUS' | 'PREMIUM')[] =
+    product.bedRules?.allowedQualities && product.bedRules.allowedQualities.length > 0
+      ? product.bedRules.allowedQualities
+      : ['PLUS', 'PREMIUM'];
 
-  // Inicializar / resetear al abrir
-  useEffect(() => {
-    if (isOpen) {
-      if (initialCustomization) {
-        setQuality(initialCustomization.quality || 'PLUS');
-        setSelectedSizeId(initialCustomization.size?.id || '1x190');
-        setSelectedMattressId(initialCustomization.mattress ? initialCustomization.mattress.id : 'sin-colchon');
-        setSelectedColorId(initialCustomization.color?.id || 'blanco');
-        setSelectedAddonIds(initialCustomization.addons ? initialCustomization.addons.map((a) => a.id) : []);
-      } else {
-        setQuality('PLUS');
-        const firstActiveSize = customizerConfig.sizes?.find((s) => s.active !== false)?.id || '1x190';
-        setSelectedSizeId(firstActiveSize);
-        setSelectedMattressId('sin-colchon');
-        const firstActiveColor = customizerConfig.colors?.find((c) => c.active !== false)?.id || 'blanco';
-        setSelectedColorId(firstActiveColor);
-        setSelectedAddonIds([]);
-      }
-    }
-  }, [isOpen, initialCustomization, customizerConfig]);
+  const allowedSizeIds =
+    product.bedRules?.allowedSizeIds && product.bedRules.allowedSizeIds.length > 0
+      ? product.bedRules.allowedSizeIds
+      : null;
 
-  if (!isOpen) return null;
+  const allowedAddonIds =
+    product.bedRules?.allowedAddonIds && product.bedRules.allowedAddonIds.length > 0
+      ? product.bedRules.allowedAddonIds
+      : null;
 
-  // Opciones activas desde la configuración
+  // Opciones activas desde la configuración filtradas por el producto
   const activeSizes: CustomizerSizeOption[] = (customizerConfig?.sizes || []).filter(
-    (s) => s.active !== false
+    (s) => s.active !== false && (!allowedSizeIds || allowedSizeIds.includes(s.id))
   );
   const activeMattresses: CustomizerMattressOption[] = (
     customizerConfig?.mattresses || []
@@ -77,8 +69,46 @@ export default function CustomizerModal({
     (c) => c.active !== false
   );
   const activeAddons: CustomizerAddonOption[] = (customizerConfig?.addons || []).filter(
-    (a) => a.active !== false
+    (a) => a.active !== false && (!allowedAddonIds || allowedAddonIds.includes(a.id))
   );
+
+  // Inicializar / resetear al abrir
+  useEffect(() => {
+    if (isOpen) {
+      const defaultQuality = allowedQualities.includes('PLUS') ? 'PLUS' : allowedQualities[0] || 'PLUS';
+      const firstActiveSize = activeSizes[0]?.id || '1x190';
+
+      if (initialCustomization) {
+        const initialQ = allowedQualities.includes(initialCustomization.quality)
+          ? initialCustomization.quality
+          : defaultQuality;
+        const initialSize = activeSizes.find((s) => s.id === initialCustomization.size?.id)
+          ? initialCustomization.size.id
+          : firstActiveSize;
+
+        setQuality(initialQ);
+        setSelectedSizeId(initialSize);
+        setSelectedMattressId(initialCustomization.mattress ? initialCustomization.mattress.id : 'sin-colchon');
+        setSelectedColorId(initialCustomization.color?.id || 'blanco');
+        setSelectedAddonIds(
+          initialCustomization.addons
+            ? initialCustomization.addons
+                .map((a) => a.id)
+                .filter((id) => !allowedAddonIds || allowedAddonIds.includes(id))
+            : []
+        );
+      } else {
+        setQuality(defaultQuality);
+        setSelectedSizeId(firstActiveSize);
+        setSelectedMattressId('sin-colchon');
+        const firstActiveColor = customizerConfig.colors?.find((c) => c.active !== false)?.id || 'blanco';
+        setSelectedColorId(firstActiveColor);
+        setSelectedAddonIds([]);
+      }
+    }
+  }, [isOpen, initialCustomization, customizerConfig, product]);
+
+  if (!isOpen) return null;
 
   // Valores seleccionados actuales
   const currentSize = activeSizes.find((s) => s.id === selectedSizeId) || activeSizes[0];
@@ -139,15 +169,17 @@ export default function CustomizerModal({
   const handleSaveAction = () => {
     if (isEditing && onSaveCustomization) {
       onSaveCustomization(currentCustomization);
-      onClose();
     } else {
       addToCart(product, undefined, undefined, totalPrice, 1, currentCustomization);
-      onClose();
+    }
+    onClose();
+    if (!isEditing) {
       openCart();
     }
   };
 
-  const whatsappUrl = whatsappService.generateCustomizedProductUrl(
+  // WhatsApp Order Link para este producto personalizado
+  const customizerWhatsappUrl = whatsappService.generateCustomizedProductUrl(
     product,
     currentCustomization,
     business
@@ -156,26 +188,21 @@ export default function CustomizerModal({
   return (
     <div className="customizer-modal-backdrop" onClick={onClose}>
       <div
-        className="customizer-modal-content"
+        className="customizer-modal-dialog"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="customizer-title"
+        aria-labelledby="customizer-modal-title"
       >
-        {/* Cabecera del Modal */}
+        {/* Header Visual */}
         <div className="customizer-modal-header">
-          <div className="customizer-header-left">
-            <img
-              src={product.imageUrl || '/images/cama-cuna-plus.jpg'}
-              alt={product.name}
-              className="customizer-header-thumb"
-            />
-            <div>
-              <div className="customizer-header-badge">
-                <Sparkles size={13} />
-                <span>{isEditing ? 'Modificando Selección' : 'Personalizador Exclusivo'}</span>
-              </div>
-              <h2 id="customizer-title" className="customizer-header-title">
+          <div className="customizer-header-info">
+            <span className="customizer-badge">
+              <Sparkles size={13} />
+              <span>Personalizador Inteligente</span>
+            </span>
+            <div className="customizer-header-title-row">
+              <h2 id="customizer-modal-title" className="customizer-title">
                 {product.name}
               </h2>
               <div className="customizer-header-baseprice">
@@ -213,72 +240,78 @@ export default function CustomizerModal({
                   {customizerConfig.quality?.sectionTitle || 'Línea de Fabricación y Acabado'}
                 </h3>
                 <p className="customizer-section-sub">
-                  {customizerConfig.quality?.sectionSubtitle ||
-                    'La base de todas es PLUS. Si eliges PREMIUM, se activa en verde con laca en poliuretano.'}
+                  {allowedQualities.length === 1
+                    ? `Gama exclusiva de este modelo: ${allowedQualities[0]}`
+                    : customizerConfig.quality?.sectionSubtitle ||
+                      'La base de todas es PLUS. Si eliges PREMIUM, se activa en verde con laca en poliuretano.'}
                 </p>
               </div>
             </div>
 
-            <div className="customizer-chips-grid grid-quality">
+            <div className={`customizer-chips-grid grid-quality ${allowedQualities.length === 1 ? 'single-quality' : ''}`}>
               {/* Chip PLUS */}
-              <button
-                type="button"
-                className={`chip-button chip-quality-plus ${quality === 'PLUS' ? 'is-active' : ''}`}
-                onClick={() => setQuality('PLUS')}
-              >
-                <div className="chip-content-top">
-                  <span className="chip-label-badge">
-                    {customizerConfig.quality?.plus?.badge || 'BASE INCLUIDA'}
-                  </span>
-                  <span className="chip-title">
-                    {customizerConfig.quality?.plus?.name || 'PLUS'}
-                  </span>
-                  <span className="chip-price">+$0</span>
-                </div>
-                <div className="chip-features">
-                  <div>• {customizerConfig.quality?.plus?.wood || 'Madera de roble seleccionada'}</div>
-                  <div>• {customizerConfig.quality?.plus?.finish || 'Pintura catalizada de alta adherencia'}</div>
-                  {customizerConfig.quality?.plus?.standardMeasure && (
-                    <div>• {customizerConfig.quality.plus.standardMeasure}</div>
-                  )}
-                </div>
-                {quality === 'PLUS' && (
-                  <div className="chip-check-indicator">
-                    <Check size={14} strokeWidth={3} />
+              {allowedQualities.includes('PLUS') && (
+                <button
+                  type="button"
+                  className={`chip-button chip-quality-plus ${quality === 'PLUS' ? 'is-active' : ''}`}
+                  onClick={() => setQuality('PLUS')}
+                >
+                  <div className="chip-content-top">
+                    <span className="chip-label-badge">
+                      {customizerConfig.quality?.plus?.badge || 'BASE INCLUIDA'}
+                    </span>
+                    <span className="chip-title">
+                      {customizerConfig.quality?.plus?.name || 'PLUS'}
+                    </span>
+                    <span className="chip-price">+$0</span>
                   </div>
-                )}
-              </button>
+                  <div className="chip-features">
+                    <div>• {customizerConfig.quality?.plus?.wood || 'Madera de roble seleccionada'}</div>
+                    <div>• {customizerConfig.quality?.plus?.finish || 'Pintura catalizada de alta adherencia'}</div>
+                    {customizerConfig.quality?.plus?.standardMeasure && (
+                      <div>• {customizerConfig.quality.plus.standardMeasure}</div>
+                    )}
+                  </div>
+                  {quality === 'PLUS' && (
+                    <div className="chip-check-indicator">
+                      <Check size={14} strokeWidth={3} />
+                    </div>
+                  )}
+                </button>
+              )}
 
               {/* Chip PREMIUM */}
-              <button
-                type="button"
-                className={`chip-button chip-quality-premium ${quality === 'PREMIUM' ? 'is-active is-green' : ''}`}
-                onClick={() => setQuality('PREMIUM')}
-              >
-                <div className="chip-content-top">
-                  <span className="chip-label-badge green-badge">
-                    {customizerConfig.quality?.premium?.badge || 'ALTA GAMA'}
-                  </span>
-                  <span className="chip-title">
-                    {customizerConfig.quality?.premium?.name || 'PREMIUM'}
-                  </span>
-                  <span className="chip-price green-text">
-                    +{formatPrice(Number(customizerConfig.quality?.premium?.priceModifier) || 300000)}
-                  </span>
-                </div>
-                <div className="chip-features">
-                  <div>• {customizerConfig.quality?.premium?.wood || 'Madera de roble seleccionada'}</div>
-                  <div>• {customizerConfig.quality?.premium?.finish || 'Pintura en poliuretano (alta resistencia y acabado sedoso)'}</div>
-                  {customizerConfig.quality?.premium?.standardMeasure && (
-                    <div>• {customizerConfig.quality.premium.standardMeasure}</div>
-                  )}
-                </div>
-                {quality === 'PREMIUM' && (
-                  <div className="chip-check-indicator green-indicator">
-                    <Check size={14} strokeWidth={3} />
+              {allowedQualities.includes('PREMIUM') && (
+                <button
+                  type="button"
+                  className={`chip-button chip-quality-premium ${quality === 'PREMIUM' ? 'is-active is-green' : ''}`}
+                  onClick={() => setQuality('PREMIUM')}
+                >
+                  <div className="chip-content-top">
+                    <span className="chip-label-badge green-badge">
+                      {customizerConfig.quality?.premium?.badge || 'ALTA GAMA'}
+                    </span>
+                    <span className="chip-title">
+                      {customizerConfig.quality?.premium?.name || 'PREMIUM'}
+                    </span>
+                    <span className="chip-price green-text">
+                      +{formatPrice(Number(customizerConfig.quality?.premium?.priceModifier) || 300000)}
+                    </span>
                   </div>
-                )}
-              </button>
+                  <div className="chip-features">
+                    <div>• {customizerConfig.quality?.premium?.wood || 'Madera de roble seleccionada'}</div>
+                    <div>• {customizerConfig.quality?.premium?.finish || 'Pintura en poliuretano (alta resistencia y acabado sedoso)'}</div>
+                    {customizerConfig.quality?.premium?.standardMeasure && (
+                      <div>• {customizerConfig.quality.premium.standardMeasure}</div>
+                    )}
+                  </div>
+                  {quality === 'PREMIUM' && (
+                    <div className="chip-check-indicator green-indicator">
+                      <Check size={14} strokeWidth={3} />
+                    </div>
+                  )}
+                </button>
+              )}
             </div>
           </section>
 

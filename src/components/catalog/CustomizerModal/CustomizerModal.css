@@ -205,6 +205,11 @@
   gap: 14px;
 }
 
+.grid-quality.single-quality {
+  grid-template-columns: 1fr;
+  max-width: 480px;
+}
+
 .chip-button {
   background-color: #FFFFFF;
   border: 2px solid var(--border-subtle);

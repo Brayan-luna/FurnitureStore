@@ -2,9 +2,9 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import Modal from '../../common/Modal';
 import ImageUploader from '../../common/ImageUploader';
 import Select from '../../common/Select';
-import { Sparkles, Sliders, Plus, Trash2, Layers, CheckSquare, Package } from 'lucide-react';
+import { Sparkles, Sliders, Plus, Trash2, Layers, CheckSquare, Package, Check } from 'lucide-react';
 import { useProducts } from '../../../context/ProductContext';
-import { Product, ProductTypeOption, ProductAdditionalOption, CustomizationType } from '../../../types';
+import { Product, ProductTypeOption, ProductAdditionalOption, CustomizationType, ProductBedCustomizerRules } from '../../../types';
 import { formatPrice, getDiscountedPrice } from '../../../utils/formatters';
 import './ProductFormModal.css';
 
@@ -22,7 +22,7 @@ export interface ProductFormModalProps {
 }
 
 export default function ProductFormModal({ isOpen, onClose, initialProduct = null }: ProductFormModalProps) {
-  const { addProduct, updateProduct, categories } = useProducts();
+  const { addProduct, updateProduct, categories, customizerConfig } = useProducts();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -32,6 +32,11 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
   const [imageUrl, setImageUrl] = useState('/images/cama-cuna-plus.jpg');
   const [customizationType, setCustomizationType] = useState<CustomizationType>('bed_customizer');
 
+  // Reglas del personalizador de cama cuna (Gamas, Medidas y Adicionales permitidos para este modelo)
+  const [allowedQualities, setAllowedQualities] = useState<('PLUS' | 'PREMIUM')[]>(['PLUS', 'PREMIUM']);
+  const [allowedSizeIds, setAllowedSizeIds] = useState<string[]>([]);
+  const [allowedAddonIds, setAllowedAddonIds] = useState<string[]>([]);
+
   // Variantes y Adicionales propios (para Peinadoras, Cómodas, otros muebles)
   const [types, setTypes] = useState<ProductTypeOption[]>([
     { id: 'opcion-1', name: 'Medida Estándar', priceModifier: 0 }
@@ -40,6 +45,8 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
   const [additionals, setAdditionals] = useState<ProductAdditionalOption[]>([]);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (initialProduct) {
       setName(initialProduct.name || '');
       setDescription(initialProduct.description || '');
@@ -47,7 +54,26 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
       setBasePrice(initialProduct.basePrice || 0);
       setDiscountAmount(initialProduct.discountAmount || 0);
       setImageUrl(initialProduct.imageUrl || '/images/cama-cuna-plus.jpg');
-      setCustomizationType(initialProduct.customizationType || 'bed_customizer');
+      
+      const isBed = ['plus', 'premium', 'tapizada', 'natural'].includes(initialProduct.categoryId);
+      const determinedMode: CustomizationType = initialProduct.customizationType 
+        ? initialProduct.customizationType 
+        : (isBed ? 'bed_customizer' : 'custom_variants');
+
+      setCustomizationType(determinedMode);
+
+      setAllowedQualities(initialProduct.bedRules?.allowedQualities || ['PLUS', 'PREMIUM']);
+      setAllowedSizeIds(
+        initialProduct.bedRules?.allowedSizeIds && initialProduct.bedRules.allowedSizeIds.length > 0
+          ? initialProduct.bedRules.allowedSizeIds
+          : (customizerConfig.sizes || []).map((s) => s.id)
+      );
+      setAllowedAddonIds(
+        initialProduct.bedRules?.allowedAddonIds && initialProduct.bedRules.allowedAddonIds.length > 0
+          ? initialProduct.bedRules.allowedAddonIds
+          : (customizerConfig.addons || []).map((a) => a.id)
+      );
+
       setTypes(
         initialProduct.types && initialProduct.types.length > 0
           ? initialProduct.types
@@ -58,15 +84,65 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
       // Valores para nuevo producto
       setName('');
       setDescription('');
-      setCategoryId(categories.find(c => c.id !== 'todas')?.id || 'plus');
+      const defaultCat = categories.find(c => c.id !== 'todas')?.id || 'plus';
+      setCategoryId(defaultCat);
       setBasePrice(2700000);
       setDiscountAmount(0);
       setImageUrl('/images/cama-cuna-plus.jpg');
-      setCustomizationType('bed_customizer');
+      const isBed = ['plus', 'premium', 'tapizada', 'natural'].includes(defaultCat);
+      setCustomizationType(isBed ? 'bed_customizer' : 'custom_variants');
+      setAllowedQualities(['PLUS', 'PREMIUM']);
+      setAllowedSizeIds((customizerConfig.sizes || []).map((s) => s.id));
+      setAllowedAddonIds((customizerConfig.addons || []).map((a) => a.id));
       setTypes([{ id: 'opcion-1', name: 'Medida Estándar', priceModifier: 0 }]);
       setAdditionals([]);
     }
-  }, [initialProduct, isOpen, categories]);
+  }, [initialProduct, isOpen, customizerConfig]);
+
+  // Manejo de reglas de cama (Gamas, Medidas, Adicionales)
+  const toggleQuality = (q: 'PLUS' | 'PREMIUM') => {
+    if (allowedQualities.includes(q)) {
+      if (allowedQualities.length === 1) return; // Evitar desmarcar todas
+      setAllowedQualities(allowedQualities.filter((item) => item !== q));
+    } else {
+      setAllowedQualities([...allowedQualities, q]);
+    }
+  };
+
+  const toggleSize = (sizeId: string) => {
+    if (allowedSizeIds.includes(sizeId)) {
+      if (allowedSizeIds.length === 1) return; // Mantener al menos 1 medida
+      setAllowedSizeIds(allowedSizeIds.filter((id) => id !== sizeId));
+    } else {
+      setAllowedSizeIds([...allowedSizeIds, sizeId]);
+    }
+  };
+
+  const toggleAllSizes = () => {
+    const allIds = (customizerConfig.sizes || []).map((s) => s.id);
+    if (allowedSizeIds.length === allIds.length) {
+      setAllowedSizeIds([allIds[0]]);
+    } else {
+      setAllowedSizeIds(allIds);
+    }
+  };
+
+  const toggleAddon = (addonId: string) => {
+    if (allowedAddonIds.includes(addonId)) {
+      setAllowedAddonIds(allowedAddonIds.filter((id) => id !== addonId));
+    } else {
+      setAllowedAddonIds([...allowedAddonIds, addonId]);
+    }
+  };
+
+  const toggleAllAddons = () => {
+    const allIds = (customizerConfig.addons || []).map((a) => a.id);
+    if (allowedAddonIds.length === allIds.length) {
+      setAllowedAddonIds([]);
+    } else {
+      setAllowedAddonIds(allIds);
+    }
+  };
 
   // Manejadores de Tipos/Variantes propias
   const handleAddType = () => {
@@ -107,6 +183,17 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
     setAdditionals(additionals.filter((_, i) => i !== index));
   };
 
+  const handleCategoryChange = (newCatId: string) => {
+    setCategoryId(newCatId);
+    // Si el usuario cambia a una categoría de mueble que no es cama cuna, auto-activar 'custom_variants'
+    const isBed = ['plus', 'premium', 'tapizada', 'natural'].includes(newCatId);
+    if (!isBed && customizationType === 'bed_customizer') {
+      setCustomizationType('custom_variants');
+    } else if (isBed && customizationType === 'custom_variants' && !initialProduct) {
+      setCustomizationType('bed_customizer');
+    }
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
@@ -119,6 +206,11 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
       discountAmount: Number(discountAmount) || 0,
       imageUrl: imageUrl.trim() || '/images/cama-cuna-plus.jpg',
       customizationType,
+      bedRules: customizationType === 'bed_customizer' ? {
+        allowedQualities,
+        allowedSizeIds,
+        allowedAddonIds
+      } : undefined,
       types: customizationType === 'custom_variants' ? types : (initialProduct?.types || []),
       additionals: customizationType === 'custom_variants' ? additionals : (initialProduct?.additionals || [])
     };
@@ -210,7 +302,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
             </label>
             <Select
               value={categoryId}
-              onChange={setCategoryId}
+              onChange={handleCategoryChange}
               options={availableCategories.map((c) => ({
                 id: c.id,
                 name: c.name
@@ -330,15 +422,122 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
         {/* SECCIÓN CONDICIONAL SEGÚN EL MODO DE PRODUCTO */}
 
         {customizationType === 'bed_customizer' && (
-          <div className="product-customizer-notice">
-            <div className="product-customizer-notice-icon">
-              <Sliders size={18} />
+          <div className="product-bed-rules-section">
+            <div className="product-customizer-notice">
+              <div className="product-customizer-notice-icon">
+                <Sliders size={18} />
+              </div>
+              <div className="product-customizer-notice-content">
+                <strong>Opciones Habilitadas para esta Cama</strong>
+                <p>
+                  Elige qué gamas, medidas y adicionales del catálogo global estarán disponibles cuando el cliente personalice este modelo específico.
+                </p>
+              </div>
             </div>
-            <div className="product-customizer-notice-content">
-              <strong>Personalizador Global Activo</strong>
-              <p>
-                Las medidas, colchones compatibles, colores y adicionales de cama cuna se administran de forma unificada desde la pestaña <strong>Personalizador</strong>.
-              </p>
+
+            {/* 1. Líneas de Fabricación Habilitadas */}
+            <div className="bed-rules-group">
+              <div className="bed-rules-group-header">
+                <strong>1. Gamas / Líneas Disponibles para esta Cama:</strong>
+                <span className="bed-rules-hint">Desmarca si este modelo NO se fabrica en PLUS o PREMIUM</span>
+              </div>
+              <div className="bed-rules-chips-grid">
+                <button
+                  type="button"
+                  className={`bed-rule-chip ${allowedQualities.includes('PLUS') ? 'active' : ''}`}
+                  onClick={() => toggleQuality('PLUS')}
+                >
+                  <div className={`bed-rule-check ${allowedQualities.includes('PLUS') ? 'checked' : ''}`}>
+                    {allowedQualities.includes('PLUS') && <Check size={12} strokeWidth={3} />}
+                  </div>
+                  <div className="bed-rule-chip-text">
+                    <strong>Línea {customizerConfig.quality?.plus?.name || 'PLUS'}</strong>
+                    <span>Base incluida ($0)</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  className={`bed-rule-chip ${allowedQualities.includes('PREMIUM') ? 'active' : ''}`}
+                  onClick={() => toggleQuality('PREMIUM')}
+                >
+                  <div className={`bed-rule-check ${allowedQualities.includes('PREMIUM') ? 'checked' : ''}`}>
+                    {allowedQualities.includes('PREMIUM') && <Check size={12} strokeWidth={3} />}
+                  </div>
+                  <div className="bed-rule-chip-text">
+                    <strong>Línea {customizerConfig.quality?.premium?.name || 'PREMIUM'}</strong>
+                    <span>+{formatPrice(customizerConfig.quality?.premium?.priceModifier || 300000)}</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Medidas Disponibles */}
+            <div className="bed-rules-group">
+              <div className="bed-rules-group-header">
+                <strong>2. Medidas Disponibles para esta Cama:</strong>
+                <button
+                  type="button"
+                  className="bed-rules-select-all"
+                  onClick={toggleAllSizes}
+                >
+                  {allowedSizeIds.length === (customizerConfig.sizes || []).length ? 'Solo primera' : 'Seleccionar todas'}
+                </button>
+              </div>
+              <div className="bed-rules-chips-grid">
+                {(customizerConfig.sizes || []).filter(s => s.active !== false).map((size) => {
+                  const isChecked = allowedSizeIds.includes(size.id);
+                  return (
+                    <button
+                      key={size.id}
+                      type="button"
+                      className={`bed-rule-chip ${isChecked ? 'active' : ''}`}
+                      onClick={() => toggleSize(size.id)}
+                    >
+                      <div className={`bed-rule-check ${isChecked ? 'checked' : ''}`}>
+                        {isChecked && <Check size={12} strokeWidth={3} />}
+                      </div>
+                      <div className="bed-rule-chip-text">
+                        <strong>{size.name}</strong>
+                        <span>{size.priceModifier === 0 ? '+$0' : `+${formatPrice(size.priceModifier)}`}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 3. Adicionales Disponibles */}
+            <div className="bed-rules-group">
+              <div className="bed-rules-group-header">
+                <strong>3. Adicionales de Cama Habilitados:</strong>
+                <button
+                  type="button"
+                  className="bed-rules-select-all"
+                  onClick={toggleAllAddons}
+                >
+                  {allowedAddonIds.length === (customizerConfig.addons || []).length ? 'Desmarcar todos' : 'Seleccionar todos'}
+                </button>
+              </div>
+              <div className="bed-rules-addons-list">
+                {(customizerConfig.addons || []).filter(a => a.active !== false).map((addon) => {
+                  const isChecked = allowedAddonIds.includes(addon.id);
+                  return (
+                    <button
+                      key={addon.id}
+                      type="button"
+                      className={`bed-rule-addon-item ${isChecked ? 'active' : ''}`}
+                      onClick={() => toggleAddon(addon.id)}
+                    >
+                      <div className={`bed-rule-check ${isChecked ? 'checked' : ''}`}>
+                        {isChecked && <Check size={12} strokeWidth={3} />}
+                      </div>
+                      <span className="bed-rule-addon-name">{addon.name}</span>
+                      <span className="bed-rule-addon-price">+{formatPrice(addon.price)}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
