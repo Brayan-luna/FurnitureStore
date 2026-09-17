@@ -23,16 +23,6 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isBedCustomizerOpen, setIsBedCustomizerOpen] = useState(false);
   const [isFurnitureCustomizerOpen, setIsFurnitureCustomizerOpen] = useState(false);
 
-  // Modo de producto
-  const isBedCat = ['plus', 'premium', 'tapizada', 'natural'].includes(product.categoryId);
-  const mode = product.customizationType || (isBedCat ? 'bed_customizer' : 'custom_variants');
-
-  // Precio base y descuento
-  const basePrice = Number(product.basePrice) || 0;
-  const discountAmount = Number(product.discountAmount) || 0;
-  const hasDiscount = discountAmount > 0;
-  const finalBasePrice = getDiscountedPrice(basePrice, discountAmount);
-
   // Encontrar información de la categoría
   const category = categories.find((c) => c.id === product.categoryId) || {
     name: 'General',
@@ -41,7 +31,23 @@ export default function ProductCard({ product }: ProductCardProps) {
     bg: 'rgba(224, 242, 254, 0.9)'
   };
 
-  const handleActionClick = () => {
+  // Modo de producto
+  const isBedCat =
+    ['plus', 'premium', 'tapizada', 'natural'].includes(product.categoryId) ||
+    (category.name ? category.name.toLowerCase().includes('cama') : false);
+  const mode = product.customizationType || (isBedCat ? 'bed_customizer' : 'custom_variants');
+
+  // Precio base y descuento
+  const basePrice = Number(product.basePrice) || 0;
+  const discountAmount = Number(product.discountAmount) || 0;
+  const hasDiscount = discountAmount > 0;
+  const finalBasePrice = getDiscountedPrice(basePrice, discountAmount);
+
+  const handleActionClick = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (mode === 'bed_customizer') {
       setIsBedCustomizerOpen(true);
     } else if (mode === 'custom_variants') {
@@ -98,7 +104,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             <button
               type="button"
               className="btn-open-customizer"
-              onClick={() => setIsBedCustomizerOpen(true)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsBedCustomizerOpen(true);
+              }}
               aria-label={`Personalizar ${product.name}`}
             >
               <div className="btn-open-customizer-left">
@@ -118,7 +128,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             <button
               type="button"
               className="btn-open-customizer furniture"
-              onClick={() => setIsFurnitureCustomizerOpen(true)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsFurnitureCustomizerOpen(true);
+              }}
               aria-label={`Personalizar ${product.name}`}
             >
               <div className="btn-open-customizer-left">

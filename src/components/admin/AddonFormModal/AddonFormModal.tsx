@@ -19,7 +19,7 @@ export default function AddonFormModal({
   const { addAddon, updateAddon } = useProducts();
 
   const [name, setName] = useState('');
-  const [price, setPrice] = useState(500000);
+  const [price, setPrice] = useState<number | string>(500000);
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [active, setActive] = useState(true);
@@ -48,15 +48,16 @@ export default function AddonFormModal({
       return;
     }
 
-    if (price < 0) {
-      alert('El precio no puede ser negativo.');
+    const numPrice = Number(price);
+    if (isNaN(numPrice) || numPrice <= 0) {
+      alert('El precio debe ser un número superior a 0.');
       return;
     }
 
     if (initialAddon) {
       updateAddon(initialAddon.id, {
         name: name.trim(),
-        price: Number(price),
+        price: numPrice,
         description: description.trim(),
         imageUrl: imageUrl.trim() || undefined,
         active
@@ -64,7 +65,7 @@ export default function AddonFormModal({
     } else {
       addAddon({
         name: name.trim(),
-        price: Number(price),
+        price: numPrice,
         description: description.trim(),
         imageUrl: imageUrl.trim() || undefined,
         active
@@ -105,11 +106,14 @@ export default function AddonFormModal({
           <input
             type="number"
             required
-            min={0}
+            min={1}
             step={10000}
             className="input-field"
             value={price}
-            onChange={(e) => setPrice(Number(e.target.value))}
+            onChange={(e) => {
+              const val = e.target.value;
+              setPrice(val === '' ? '' : Math.max(0, Number(val)));
+            }}
             placeholder="500000"
           />
         </div>

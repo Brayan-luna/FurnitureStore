@@ -113,7 +113,7 @@ export default function StorePage() {
         <ProductGrid />
 
         {/* Sección de Adicionales */}
-        <AddonSection />
+        {/* <AddonSection /> */}
       </main>
 
       <Footer />

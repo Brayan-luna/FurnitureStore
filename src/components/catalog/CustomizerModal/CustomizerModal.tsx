@@ -188,7 +188,7 @@ export default function CustomizerModal({
   return (
     <div className="customizer-modal-backdrop" onClick={onClose}>
       <div
-        className="customizer-modal-dialog"
+        className="customizer-modal-content"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -196,13 +196,21 @@ export default function CustomizerModal({
       >
         {/* Header Visual */}
         <div className="customizer-modal-header">
-          <div className="customizer-header-info">
-            <span className="customizer-badge">
-              <Sparkles size={13} />
-              <span>Personalizador Inteligente</span>
-            </span>
-            <div className="customizer-header-title-row">
-              <h2 id="customizer-modal-title" className="customizer-title">
+          <div className="customizer-header-left">
+            <img
+              src={product.imageUrl || '/images/cama-cuna-plus.jpg'}
+              alt={product.name}
+              className="customizer-header-thumb"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/images/cama-cuna-plus.jpg';
+              }}
+            />
+            <div>
+              <span className="customizer-header-badge">
+                <Sparkles size={13} />
+                <span>Personalizador Inteligente</span>
+              </span>
+              <h2 id="customizer-modal-title" className="customizer-header-title">
                 {product.name}
               </h2>
               <div className="customizer-header-baseprice">
@@ -547,7 +555,7 @@ export default function CustomizerModal({
             </button>
 
             <a
-              href={whatsappUrl}
+              href={customizerWhatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-customizer-whatsapp"

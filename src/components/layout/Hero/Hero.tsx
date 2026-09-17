@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, Phone, Globe, Sparkles } from 'lucide-react';
+import { MessageCircle, Phone, Globe, Sparkles, MapPin } from 'lucide-react';
 import { InstagramIcon } from '../../common/Icons';
 import { useBusiness } from '../../../context/BusinessContext';
 import { whatsappService } from '../../../services/whatsappService';
@@ -10,6 +10,7 @@ export default function Hero() {
   const heroData = business.hero || {};
 
   const heroWhatsappUrl = whatsappService.generateHeroContactUrl(business);
+  const mapsUrl = business.mapsUrl || 'https://maps.app.goo.gl/38aWUaJMsGmr19t36?g_st=iwb';
 
   return (
     <section className="hero-wrapper" id="inicio">
@@ -62,28 +63,43 @@ export default function Hero() {
               className="contact-meta-item"
             >
               <Phone size={16} />
-              <span>{business.displayPhone || '321 402 8890'}</span>
+              <span>{business.displayPhone || '311 759 6281'}</span>
             </a>
 
             <a
-              href={`https://instagram.com/${(business.instagram || '').replace('@', '')}`}
+              href={`https://instagram.com/${(business.instagram || 'joha.vic').replace('@', '')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="contact-meta-item"
             >
               <InstagramIcon size={16} />
-              <span>{business.instagram || '@zona_kids_home'}</span>
+              <span>{business.instagram || '@joha.vic'}</span>
             </a>
 
-            <a
-              href={`https://${business.website || 'zonakidshome.com'}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="contact-meta-item"
-            >
-              <Globe size={16} />
-              <span>{business.website || 'zonakidshome.com'}</span>
-            </a>
+            {mapsUrl && (
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-meta-item"
+                title="Ver ubicación en Google Maps"
+              >
+                <MapPin size={16} />
+                <span>{business.cityNote || business.city || 'Ubicación Google Maps'}</span>
+              </a>
+            )}
+
+            {business.website && (
+              <a
+                href={business.website.startsWith('http') ? business.website : `https://${business.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-meta-item"
+              >
+                <Globe size={16} />
+                <span>{business.website}</span>
+              </a>
+            )}
           </div>
         </div>
       </div>

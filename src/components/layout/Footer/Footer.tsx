@@ -50,11 +50,26 @@ export default function Footer() {
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <InstagramIcon size={16} color="var(--color-accent-pink)" />
-                <span>Instagram: {business.instagram || '@zona_kids_home'}</span>
+                <a
+                  href={`https://instagram.com/${(business.instagram || 'joha.vic').replace('@', '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'inherit', textDecoration: 'none' }}
+                >
+                  <span>Instagram: {business.instagram || '@joha.vic'}</span>
+                </a>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MapPin size={16} color="#38BDF8" />
-                <span>{business.cityNote || 'Fabricantes directos en Villavicencio'}</span>
+                <a
+                  href={business.mapsUrl || 'https://maps.app.goo.gl/38aWUaJMsGmr19t36?g_st=iwb'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
+                  title="Ver ubicación en Google Maps"
+                >
+                  <MapPin size={16} color="#38BDF8" />
+                  <span>{business.cityNote || 'Fabricantes directos en Villavicencio'}</span>
+                </a>
               </li>
             </ul>
           </div>

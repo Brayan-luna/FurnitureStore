@@ -27,8 +27,8 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('plus');
-  const [basePrice, setBasePrice] = useState(2700000);
-  const [discountAmount, setDiscountAmount] = useState<number>(0);
+  const [basePrice, setBasePrice] = useState<number | string>(2700000);
+  const [discountAmount, setDiscountAmount] = useState<number | string>(0);
   const [imageUrl, setImageUrl] = useState('/images/cama-cuna-plus.jpg');
   const [customizationType, setCustomizationType] = useState<CustomizationType>('bed_customizer');
 
@@ -38,11 +38,11 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
   const [allowedAddonIds, setAllowedAddonIds] = useState<string[]>([]);
 
   // Variantes y Adicionales propios (para Peinadoras, Cómodas, otros muebles)
-  const [types, setTypes] = useState<ProductTypeOption[]>([
+  const [types, setTypes] = useState<{ id: string; name: string; priceModifier: number | string }[]>([
     { id: 'opcion-1', name: 'Medida Estándar', priceModifier: 0 }
   ]);
 
-  const [additionals, setAdditionals] = useState<ProductAdditionalOption[]>([]);
+  const [additionals, setAdditionals] = useState<{ id: string; name: string; priceModifier: number | string }[]>([]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -154,7 +154,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
     const updated = [...types];
     updated[index] = {
       ...updated[index],
-      [field]: field === 'priceModifier' ? Number(value) || 0 : String(value)
+      [field]: field === 'priceModifier' ? (value === '' ? '' : Math.max(0, Number(value))) : String(value)
     };
     setTypes(updated);
   };
@@ -174,7 +174,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
     const updated = [...additionals];
     updated[index] = {
       ...updated[index],
-      [field]: field === 'priceModifier' ? Number(value) || 0 : String(value)
+      [field]: field === 'priceModifier' ? (value === '' ? '' : Math.max(0, Number(value))) : String(value)
     };
     setAdditionals(updated);
   };
@@ -185,8 +185,11 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
 
   const handleCategoryChange = (newCatId: string) => {
     setCategoryId(newCatId);
-    // Si el usuario cambia a una categoría de mueble que no es cama cuna, auto-activar 'custom_variants'
-    const isBed = ['plus', 'premium', 'tapizada', 'natural'].includes(newCatId);
+    const cat = categories.find((c) => c.id === newCatId);
+    const isBed =
+      ['plus', 'premium', 'tapizada', 'natural'].includes(newCatId) ||
+      (cat?.name ? cat.name.toLowerCase().includes('cama') : false);
+
     if (!isBed && customizationType === 'bed_customizer') {
       setCustomizationType('custom_variants');
     } else if (isBed && customizationType === 'custom_variants' && !initialProduct) {
@@ -198,12 +201,30 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
     e.preventDefault();
     if (!name.trim()) return;
 
+    const numBasePrice = Number(basePrice);
+    if (isNaN(numBasePrice) || numBasePrice <= 0) {
+      alert('El precio base debe ser un número superior a 0.');
+      return;
+    }
+
+    const sanitizedTypes: ProductTypeOption[] = types.map((t) => ({
+      id: t.id,
+      name: t.name.trim() || 'Opción',
+      priceModifier: Math.max(0, Number(t.priceModifier) || 0)
+    }));
+
+    const sanitizedAdditionals: ProductAdditionalOption[] = additionals.map((a) => ({
+      id: a.id,
+      name: a.name.trim() || 'Adicional',
+      priceModifier: Math.max(0, Number(a.priceModifier) || 0)
+    }));
+
     const productPayload = {
       name: name.trim(),
       description: description.trim(),
       categoryId,
-      basePrice: Number(basePrice) || 0,
-      discountAmount: Number(discountAmount) || 0,
+      basePrice: numBasePrice,
+      discountAmount: Math.max(0, Number(discountAmount) || 0),
       imageUrl: imageUrl.trim() || '/images/cama-cuna-plus.jpg',
       customizationType,
       bedRules: customizationType === 'bed_customizer' ? {
@@ -211,8 +232,8 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
         allowedSizeIds,
         allowedAddonIds
       } : undefined,
-      types: customizationType === 'custom_variants' ? types : (initialProduct?.types || []),
-      additionals: customizationType === 'custom_variants' ? additionals : (initialProduct?.additionals || [])
+      types: customizationType === 'custom_variants' ? sanitizedTypes : (initialProduct?.types || []),
+      additionals: customizationType === 'custom_variants' ? sanitizedAdditionals : (initialProduct?.additionals || [])
     };
 
     if (initialProduct?.id) {
@@ -225,8 +246,10 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
 
   const availableCategories = categories.filter((c) => c.id !== 'todas');
 
-  const discountedCalculated = getDiscountedPrice(basePrice, discountAmount);
-  const effectiveSavings = Math.min(basePrice, Math.max(0, Number(discountAmount) || 0));
+  const numericBasePrice = Number(basePrice) || 0;
+  const numericDiscount = Number(discountAmount) || 0;
+  const discountedCalculated = getDiscountedPrice(numericBasePrice, numericDiscount);
+  const effectiveSavings = Math.min(numericBasePrice, Math.max(0, numericDiscount));
 
   return (
     <Modal
@@ -336,8 +359,13 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
               type="number"
               className="input-field"
               value={basePrice}
-              onChange={(e) => setBasePrice(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                setBasePrice(val === '' ? '' : Math.max(0, Number(val)));
+              }}
+              min="1"
               step="10000"
+              placeholder="Ej: 2700000"
               required
             />
           </div>
@@ -349,10 +377,10 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
             <input
               type="number"
               className="input-field"
-              value={discountAmount || ''}
+              value={discountAmount}
               onChange={(e) => {
-                const val = Math.max(0, Number(e.target.value) || 0);
-                setDiscountAmount(val);
+                const val = e.target.value;
+                setDiscountAmount(val === '' ? '' : Math.max(0, Number(val)));
               }}
               placeholder="0 (Ej: 150000)"
               min="0"
@@ -583,6 +611,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
                         value={type.priceModifier}
                         onChange={(e) => handleUpdateType(idx, 'priceModifier', e.target.value)}
                         placeholder="0"
+                        min="0"
                         step="10000"
                       />
                     </div>
@@ -645,6 +674,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
                           value={add.priceModifier}
                           onChange={(e) => handleUpdateAdditional(idx, 'priceModifier', e.target.value)}
                           placeholder="0"
+                          min="0"
                           step="10000"
                         />
                       </div>

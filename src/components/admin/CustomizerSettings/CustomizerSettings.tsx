@@ -24,6 +24,12 @@ export default function CustomizerSettings() {
   const [newMattressSize, setNewMattressSize] = useState('all');
   const [showAddMattressForm, setShowAddMattressForm] = useState(false);
 
+  // Estados para nueva medida
+  const [newSizeName, setNewSizeName] = useState('');
+  const [newSizeLabel, setNewSizeLabel] = useState('');
+  const [newSizePrice, setNewSizePrice] = useState('');
+  const [showAddSizeForm, setShowAddSizeForm] = useState(false);
+
   // Estados para nuevo color
   const [newColorName, setNewColorName] = useState('');
   const [newColorHex, setNewColorHex] = useState('#FFFFFF');
@@ -31,7 +37,33 @@ export default function CustomizerSettings() {
 
   // Guardar configuración global
   const handleSaveAll = () => {
-    updateCustomizerConfig(config);
+    const sanitizedConfig: CustomizerConfig = {
+      ...config,
+      quality: {
+        ...config.quality,
+        plus: {
+          ...config.quality.plus,
+          priceModifier: Number(config.quality.plus.priceModifier) || 0
+        },
+        premium: {
+          ...config.quality.premium,
+          priceModifier: Number(config.quality.premium.priceModifier) || 0
+        }
+      },
+      sizes: config.sizes.map((s) => ({
+        ...s,
+        priceModifier: Number(s.priceModifier) || 0
+      })),
+      mattresses: config.mattresses.map((m) => ({
+        ...m,
+        price: Number(m.price) || 0
+      })),
+      addons: config.addons.map((a) => ({
+        ...a,
+        price: Number(a.price) || 0
+      }))
+    };
+    updateCustomizerConfig(sanitizedConfig);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
   };
@@ -47,10 +79,10 @@ export default function CustomizerSettings() {
   };
 
   // Handlers para Adicionales
-  const handleAddonChangePrice = (addonId: string, newPrice: number) => {
+  const handleAddonChangePrice = (addonId: string, newPrice: number | string) => {
     setConfig((prev) => ({
       ...prev,
-      addons: prev.addons.map((a) => (a.id === addonId ? { ...a, price: newPrice } : a))
+      addons: prev.addons.map((a) => (a.id === addonId ? { ...a, price: newPrice as number } : a))
     }));
   };
 
@@ -101,10 +133,10 @@ export default function CustomizerSettings() {
   };
 
   // Handlers para Colchones
-  const handleMattressChangePrice = (mId: string, newPrice: number) => {
+  const handleMattressChangePrice = (mId: string, newPrice: number | string) => {
     setConfig((prev) => ({
       ...prev,
-      mattresses: prev.mattresses.map((m) => (m.id === mId ? { ...m, price: newPrice } : m))
+      mattresses: prev.mattresses.map((m) => (m.id === mId ? { ...m, price: newPrice as number } : m))
     }));
   };
 
@@ -113,6 +145,15 @@ export default function CustomizerSettings() {
       ...prev,
       mattresses: prev.mattresses.map((m) => (m.id === mId ? { ...m, active: m.active === false ? true : false } : m))
     }));
+  };
+
+  const handleMattressDelete = (mId: string) => {
+    if (window.confirm('¿Eliminar este colchón?')) {
+      setConfig((prev) => ({
+        ...prev,
+        mattresses: prev.mattresses.filter((m) => m.id !== mId)
+      }));
+    }
   };
 
   const handleAddNewMattress = (e: React.FormEvent) => {
@@ -138,11 +179,70 @@ export default function CustomizerSettings() {
   };
 
   // Handlers para Medidas
-  const handleSizeChangePrice = (sizeId: string, newPrice: number) => {
+  const handleAddNewSize = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSizeName.trim()) return;
+
+    const formattedId = `size-${Date.now()}`;
+    const newS: CustomizerSizeOption = {
+      id: formattedId,
+      name: newSizeName.trim(),
+      label: newSizeLabel.trim() || newSizeName.trim(),
+      dimension: newSizeName.trim(),
+      priceModifier: Number(newSizePrice) || 0,
+      active: true
+    };
+
     setConfig((prev) => ({
       ...prev,
-      sizes: prev.sizes.map((s) => (s.id === sizeId ? { ...s, priceModifier: newPrice } : s))
+      sizes: [...prev.sizes, newS]
     }));
+
+    setNewSizeName('');
+    setNewSizeLabel('');
+    setNewSizePrice('');
+    setShowAddSizeForm(false);
+  };
+
+  const handleSizeChangePrice = (sizeId: string, newPrice: number | string) => {
+    setConfig((prev) => ({
+      ...prev,
+      sizes: prev.sizes.map((s) => (s.id === sizeId ? { ...s, priceModifier: newPrice as number } : s))
+    }));
+  };
+
+  const handleSizeChangeName = (sizeId: string, newName: string) => {
+    setConfig((prev) => ({
+      ...prev,
+      sizes: prev.sizes.map((s) => (s.id === sizeId ? { ...s, name: newName, dimension: newName } : s))
+    }));
+  };
+
+  const handleSizeChangeLabel = (sizeId: string, newLabel: string) => {
+    setConfig((prev) => ({
+      ...prev,
+      sizes: prev.sizes.map((s) => (s.id === sizeId ? { ...s, label: newLabel } : s))
+    }));
+  };
+
+  const handleSizeToggleActive = (sizeId: string) => {
+    setConfig((prev) => ({
+      ...prev,
+      sizes: prev.sizes.map((s) => (s.id === sizeId ? { ...s, active: s.active === false ? true : false } : s))
+    }));
+  };
+
+  const handleSizeDelete = (sizeId: string) => {
+    if (config.sizes.length <= 1) {
+      alert('Debe existir al menos una medida configurada.');
+      return;
+    }
+    if (window.confirm('¿Eliminar esta medida de cama?')) {
+      setConfig((prev) => ({
+        ...prev,
+        sizes: prev.sizes.filter((s) => s.id !== sizeId)
+      }));
+    }
   };
 
   // Handlers para Colores
@@ -379,18 +479,23 @@ export default function CustomizerSettings() {
               <input
                 type="number"
                 step="10000"
-                value={config.quality?.premium?.priceModifier || 0}
-                onChange={(e) =>
+                min="0"
+                value={config.quality?.premium?.priceModifier ?? ''}
+                onChange={(e) => {
+                  const val = e.target.value;
                   setConfig((prev) => ({
                     ...prev,
                     quality: {
                       ...prev.quality,
-                      premium: { ...prev.quality.premium, priceModifier: Number(e.target.value) || 0 }
+                      premium: {
+                        ...prev.quality.premium,
+                        priceModifier: val === '' ? ('' as unknown as number) : Math.max(0, Number(val))
+                      }
                     }
-                  }))
-                }
+                  }));
+                }}
               />
-              <span className="field-hint">Actual: +{formatPrice(config.quality?.premium?.priceModifier)}</span>
+              <span className="field-hint">Actual: +{formatPrice(Number(config.quality?.premium?.priceModifier) || 0)}</span>
             </div>
 
             <div className="subcard-field">
@@ -443,31 +548,120 @@ export default function CustomizerSettings() {
 
       {/* 2. SECCIÓN: MEDIDAS */}
       <div className="settings-panel-box">
-        <div className="panel-box-header">
-          <Ruler size={18} color="var(--color-primary)" />
-          <h4>2. Precios por Medidas de Cama</h4>
+        <div className="panel-box-header space-between">
+          <div className="header-icon-title">
+            <Ruler size={18} color="var(--color-primary)" />
+            <h4>2. Precios por Medidas de Cama</h4>
+          </div>
+          <button
+            type="button"
+            className="btn-add-item-small"
+            onClick={() => setShowAddSizeForm(!showAddSizeForm)}
+          >
+            <Plus size={14} />
+            <span>Agregar Medida</span>
+          </button>
         </div>
-        <div className="sizes-table-list">
-          {config.sizes.map((size) => (
-            <div key={size.id} className="size-row-item">
-              <div className="size-row-name">
-                <strong>{size.name}</strong>
-                <span>({size.label})</span>
-              </div>
-              <div className="size-row-price-input">
-                <label>Incremento ($):</label>
-                <input
-                  type="number"
-                  step="10000"
-                  value={size.priceModifier}
-                  onChange={(e) => handleSizeChangePrice(size.id, Number(e.target.value) || 0)}
-                />
-                <span className="price-tag-preview">
-                  {size.priceModifier === 0 ? 'Incluida ($0)' : `+${formatPrice(size.priceModifier)}`}
-                </span>
-              </div>
+
+        {showAddSizeForm && (
+          <form className="mini-create-form" onSubmit={handleAddNewSize}>
+            <div className="form-grid-3">
+              <input
+                type="text"
+                placeholder="Medida / Dimensión (ej: 1,60 × 190 cm o 2 × 2 m)"
+                value={newSizeName}
+                onChange={(e) => setNewSizeName(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Nombre descriptivo (ej: Queen / Matrimonial)"
+                value={newSizeLabel}
+                onChange={(e) => setNewSizeLabel(e.target.value)}
+                required
+              />
+              <input
+                type="number"
+                step="10000"
+                placeholder="Incremento de precio ($)"
+                value={newSizePrice}
+                onChange={(e) => setNewSizePrice(e.target.value)}
+                required
+              />
             </div>
-          ))}
+            <div className="form-actions-row">
+              <button type="submit" className="btn-save-mini">
+                Guardar Medida
+              </button>
+              <button type="button" className="btn-cancel-mini" onClick={() => setShowAddSizeForm(false)}>
+                Cancelar
+              </button>
+            </div>
+          </form>
+        )}
+
+        <div className="sizes-table-list">
+          {config.sizes.map((size) => {
+            const isActive = size.active !== false;
+            return (
+              <div key={size.id} className={`size-row-item ${!isActive ? 'is-disabled-card' : ''}`}>
+                <div className="size-row-inputs">
+                  <input
+                    type="text"
+                    className="size-input-name"
+                    value={size.name}
+                    placeholder="Dimensión (ej: 1,60 × 190 cm)"
+                    onChange={(e) => handleSizeChangeName(size.id, e.target.value)}
+                    title="Dimensión de la medida"
+                  />
+                  <input
+                    type="text"
+                    className="size-input-label"
+                    value={size.label}
+                    placeholder="Nombre (ej: Queen)"
+                    onChange={(e) => handleSizeChangeLabel(size.id, e.target.value)}
+                    title="Nombre descriptivo o tipo"
+                  />
+                </div>
+                <div className="size-row-right">
+                  <div className="size-row-price-input">
+                    <label>Incremento ($):</label>
+                    <input
+                      type="number"
+                      step="10000"
+                      min="0"
+                      value={size.priceModifier ?? ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        handleSizeChangePrice(size.id, val === '' ? '' : Math.max(0, Number(val)));
+                      }}
+                    />
+                    <span className="price-tag-preview">
+                      {Number(size.priceModifier) === 0 ? 'Incluida ($0)' : `+${formatPrice(Number(size.priceModifier) || 0)}`}
+                    </span>
+                  </div>
+                  <div className="item-card-actions">
+                    <button
+                      type="button"
+                      className="btn-toggle-eye"
+                      onClick={() => handleSizeToggleActive(size.id)}
+                      title={isActive ? 'Ocultar en personalizador' : 'Mostrar en personalizador'}
+                    >
+                      {isActive ? <Eye size={15} /> : <EyeOff size={15} />}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-trash"
+                      onClick={() => handleSizeDelete(size.id)}
+                      title="Eliminar medida"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -509,7 +703,7 @@ export default function CustomizerSettings() {
                 <option value="all">Aplica para TODAS las medidas (como Croydon)</option>
                 {config.sizes.map((s) => (
                   <option key={s.id} value={s.id}>
-                    Solo para medida {s.name}
+                    Solo para medida {s.name} ({s.label})
                   </option>
                 ))}
               </select>
@@ -543,10 +737,14 @@ export default function CustomizerSettings() {
                   <input
                     type="number"
                     step="10000"
-                    value={m.price}
-                    onChange={(e) => handleMattressChangePrice(m.id, Number(e.target.value) || 0)}
+                    min="0"
+                    value={m.price ?? ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      handleMattressChangePrice(m.id, val === '' ? '' : Math.max(0, Number(val)));
+                    }}
                   />
-                  <strong>{formatPrice(m.price)}</strong>
+                  <strong>{formatPrice(Number(m.price) || 0)}</strong>
                 </div>
                 <div className="item-card-actions">
                   <button
@@ -556,6 +754,14 @@ export default function CustomizerSettings() {
                     title={isActive ? 'Ocultar en personalizador' : 'Mostrar en personalizador'}
                   >
                     {isActive ? <Eye size={15} /> : <EyeOff size={15} />}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-trash"
+                    onClick={() => handleMattressDelete(m.id)}
+                    title="Eliminar colchón"
+                  >
+                    <Trash2 size={15} />
                   </button>
                 </div>
               </div>
@@ -657,10 +863,14 @@ export default function CustomizerSettings() {
                   <input
                     type="number"
                     step="10000"
-                    value={addon.price}
-                    onChange={(e) => handleAddonChangePrice(addon.id, Number(e.target.value) || 0)}
+                    min="0"
+                    value={addon.price ?? ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      handleAddonChangePrice(addon.id, val === '' ? '' : Math.max(0, Number(val)));
+                    }}
                   />
-                  <span className="addon-price-formatted">{formatPrice(addon.price)}</span>
+                  <span className="addon-price-formatted">{formatPrice(Number(addon.price) || 0)}</span>
                 </div>
               </div>
             );

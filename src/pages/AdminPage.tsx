@@ -33,9 +33,9 @@ export default function AdminPage() {
     { id: 'products', label: 'Productos', icon: Package },
     { id: 'customizer', label: 'Personalizador', icon: Sparkles },
     { id: 'categories', label: 'Categorías', icon: Tag },
-    { id: 'addons', label: 'Adicionales Sueltos', icon: Layers },
+    // { id: 'addons', label: 'Adicionales Sueltos', icon: Layers },
     { id: 'business', label: 'Identidad & WhatsApp', icon: Building2 },
-    { id: 'backup', label: 'Respaldo JSON', icon: Download },
+    // { id: 'backup', label: 'Respaldo JSON', icon: Download },
   ];
 
   return (

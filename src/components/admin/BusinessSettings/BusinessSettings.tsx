@@ -179,7 +179,20 @@ export default function BusinessSettings() {
               className="input-field"
               value={formData.website}
               onChange={(e) => handleChange('website', e.target.value)}
-              placeholder="zonakidshome.com"
+              placeholder="joha.vic"
+            />
+          </div>
+
+          <div className="business-form-group">
+            <label className="business-form-label">
+              Enlace de Google Maps (Ubicación)
+            </label>
+            <input
+              type="url"
+              className="input-field"
+              value={formData.mapsUrl || ''}
+              onChange={(e) => handleChange('mapsUrl', e.target.value)}
+              placeholder="https://maps.app.goo.gl/38aWUaJMsGmr19t36?g_st=iwb"
             />
           </div>
 

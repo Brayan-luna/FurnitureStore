@@ -55,6 +55,7 @@ export interface BusinessConfig {
   displayPhone: string;
   instagram: string;
   website: string;
+  mapsUrl?: string;
   city: string;
   cityNote: string;
   logoText: string;
