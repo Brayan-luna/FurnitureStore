@@ -1,5 +1,8 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { storageService } from '../services/storageService';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { initialProducts, initialCategories } from '../config/initialProducts';
+import { initialAddons } from '../config/initialAddons';
+import { initialCustomizerConfig } from '../config/initialCustomizer';
+import { supabaseDbService } from '../services/supabaseDbService';
 import { Product, Category, AddonItem, CustomizerConfig } from '../types';
 
 export interface ProductContextValue {
@@ -26,11 +29,60 @@ export interface ProductContextValue {
 const ProductContext = createContext<ProductContextValue | undefined>(undefined);
 
 export function ProductProvider({ children }: { children: ReactNode }) {
-  const [products, setProducts] = useState<Product[]>(() => storageService.getProducts());
-  const [categories, setCategories] = useState<Category[]>(() => storageService.getCategories());
-  const [addons, setAddons] = useState<AddonItem[]>(() => storageService.getAddons());
-  const [customizerConfig, setCustomizerConfig] = useState<CustomizerConfig>(() => storageService.getCustomizerConfig());
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [addons, setAddons] = useState<AddonItem[]>(initialAddons);
+  const [customizerConfig, setCustomizerConfig] = useState<CustomizerConfig>(initialCustomizerConfig);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('todas');
+
+  // Carga inicial y sincronización directa desde Supabase
+  useEffect(() => {
+    let isMounted = true;
+
+    async function syncFromSupabase() {
+      try {
+        const [cloudProducts, cloudCategories, cloudAddons, cloudCustomizer] = await Promise.all([
+          supabaseDbService.getProducts(),
+          supabaseDbService.getCategories(),
+          supabaseDbService.getAddons(),
+          supabaseDbService.getCustomizerConfig()
+        ]);
+
+        if (!isMounted) return;
+
+        if (cloudProducts !== null && cloudProducts.length > 0) {
+          setProducts(cloudProducts);
+        } else if (cloudProducts !== null && cloudProducts.length === 0 && initialProducts.length > 0) {
+          // Si la base de datos de Supabase está vacía, sembrar productos iniciales
+          initialProducts.forEach((p) => supabaseDbService.upsertProduct(p));
+        }
+
+        if (cloudCategories !== null && cloudCategories.length > 0) {
+          setCategories(cloudCategories);
+        } else if (cloudCategories !== null && cloudCategories.length === 0 && initialCategories.length > 0) {
+          initialCategories.forEach((c, idx) => supabaseDbService.upsertCategory(c, idx));
+        }
+
+        if (cloudAddons !== null && cloudAddons.length > 0) {
+          setAddons(cloudAddons);
+        }
+
+        if (cloudCustomizer !== null) {
+          setCustomizerConfig(cloudCustomizer);
+        } else {
+          supabaseDbService.saveCustomizerConfig(initialCustomizerConfig);
+        }
+      } catch (err) {
+        console.warn('Error sincronizando datos con Supabase:', err);
+      }
+    }
+
+    syncFromSupabase();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const addProduct = (newProduct: Omit<Product, 'id'> & { id?: string }): Product => {
     const productWithId: Product = {
@@ -39,20 +91,23 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     };
     const updated = [productWithId, ...products];
     setProducts(updated);
-    storageService.saveProducts(updated);
+    supabaseDbService.upsertProduct(productWithId);
     return productWithId;
   };
 
   const updateProduct = (id: string, updatedFields: Partial<Product>) => {
     const updated = products.map((p) => (p.id === id ? { ...p, ...updatedFields } : p));
     setProducts(updated);
-    storageService.saveProducts(updated);
+    const targetProduct = updated.find((p) => p.id === id);
+    if (targetProduct) {
+      supabaseDbService.upsertProduct(targetProduct);
+    }
   };
 
   const deleteProduct = (id: string) => {
     const updated = products.filter((p) => p.id !== id);
     setProducts(updated);
-    storageService.saveProducts(updated);
+    supabaseDbService.deleteProduct(id);
   };
 
   const addAddon = (newAddon: Omit<AddonItem, 'id'> & { id?: string }): AddonItem => {
@@ -62,20 +117,23 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     };
     const updated = [addonWithId, ...addons];
     setAddons(updated);
-    storageService.saveAddons(updated);
+    supabaseDbService.upsertAddon(addonWithId);
     return addonWithId;
   };
 
   const updateAddon = (id: string, updatedFields: Partial<AddonItem>) => {
     const updated = addons.map((a) => (a.id === id ? { ...a, ...updatedFields } : a));
     setAddons(updated);
-    storageService.saveAddons(updated);
+    const targetAddon = updated.find((a) => a.id === id);
+    if (targetAddon) {
+      supabaseDbService.upsertAddon(targetAddon);
+    }
   };
 
   const deleteAddon = (id: string) => {
     const updated = addons.filter((a) => a.id !== id);
     setAddons(updated);
-    storageService.saveAddons(updated);
+    supabaseDbService.deleteAddon(id);
   };
 
   const addCategory = (category: Omit<Category, 'id'> & { id?: string }) => {
@@ -85,7 +143,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     };
     const updated = [...categories, catWithId];
     setCategories(updated);
-    storageService.saveCategories(updated);
+    supabaseDbService.upsertCategory(catWithId, updated.length);
     return catWithId;
   };
 
@@ -93,7 +151,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     if (id === 'todas') return;
     const updated = categories.filter((c) => c.id !== id);
     setCategories(updated);
-    storageService.saveCategories(updated);
+    supabaseDbService.deleteCategory(id);
     if (selectedCategoryId === id) {
       setSelectedCategoryId('todas');
     }
@@ -109,20 +167,19 @@ export function ProductProvider({ children }: { children: ReactNode }) {
       }
     };
     setCustomizerConfig(updated);
-    storageService.saveCustomizerConfig(updated);
+    supabaseDbService.saveCustomizerConfig(updated);
   };
 
   const resetCustomizerConfig = () => {
-    storageService.resetToDefaults();
-    setCustomizerConfig(storageService.getCustomizerConfig());
+    setCustomizerConfig(initialCustomizerConfig);
+    supabaseDbService.saveCustomizerConfig(initialCustomizerConfig);
   };
 
   const resetAllProducts = () => {
-    storageService.resetToDefaults();
-    setProducts(storageService.getProducts());
-    setCategories(storageService.getCategories());
-    setAddons(storageService.getAddons());
-    setCustomizerConfig(storageService.getCustomizerConfig());
+    setProducts(initialProducts);
+    setCategories(initialCategories);
+    setAddons(initialAddons);
+    setCustomizerConfig(initialCustomizerConfig);
     setSelectedCategoryId('todas');
   };
 

@@ -10,18 +10,26 @@ export default function AdminLogin() {
   const { login } = useAuth();
   const { business } = useBusiness();
 
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const currentLogo = business.logoUrl || logoImg;
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    const res = login(username, password);
-    if (!res.success) {
-      setError(res.error || 'Credenciales inválidas');
+    setLoading(true);
+    try {
+      const res = await login(username, password);
+      if (!res.success) {
+        setError(res.error || 'Credenciales inválidas');
+      }
+    } catch {
+      setError('Error al procesar el inicio de sesión');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +65,8 @@ export default function AdminLogin() {
                 className="input-field"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
+                placeholder="Ingresa tu usuario"
+                autoComplete="username"
                 required
               />
               <User size={18} className="admin-login-input-icon" />
@@ -74,24 +83,21 @@ export default function AdminLogin() {
                 className="input-field"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Ingresa tu contraseña"
+                autoComplete="current-password"
                 required
               />
               <Lock size={18} className="admin-login-input-icon" />
             </div>
           </div>
 
-          <div className="admin-login-credentials-note">
-            <strong>Credenciales por defecto:</strong>
-            <br />
-            Usuario: <code>admin</code> | Contraseña: <code>admin123</code>
-          </div>
-
           <button
             type="submit"
+            disabled={loading}
             className="btn-add-to-cart admin-login-submit"
+            style={{ opacity: loading ? 0.7 : 1 }}
           >
-            Iniciar Sesión
+            {loading ? 'Verificando...' : 'Iniciar Sesión'}
           </button>
         </form>
 

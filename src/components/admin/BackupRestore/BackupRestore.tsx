@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent } from 'react';
 import { Download, RotateCcw, Check, AlertTriangle } from 'lucide-react';
 import { useProducts } from '../../../context/ProductContext';
 import { useBusiness } from '../../../context/BusinessContext';
+import { supabaseDbService } from '../../../services/supabaseDbService';
 import './BackupRestore.css';
 
 export default function BackupRestore() {
@@ -37,23 +38,29 @@ export default function BackupRestore() {
     if (!e.target.files?.[0]) return;
 
     fileReader.readAsText(e.target.files[0], 'UTF-8');
-    fileReader.onload = (event) => {
+    fileReader.onload = async (event) => {
       try {
         const parsed = JSON.parse(event.target?.result as string);
         if (parsed.business) updateBusiness(parsed.business);
-        if (parsed.products) {
-          localStorage.setItem('furniture_store_products_v1', JSON.stringify(parsed.products));
+        if (parsed.products && Array.isArray(parsed.products)) {
+          for (const prod of parsed.products) {
+            await supabaseDbService.upsertProduct(prod);
+          }
         }
-        if (parsed.categories) {
-          localStorage.setItem('furniture_store_categories_v1', JSON.stringify(parsed.categories));
+        if (parsed.categories && Array.isArray(parsed.categories)) {
+          for (let i = 0; i < parsed.categories.length; i++) {
+            await supabaseDbService.upsertCategory(parsed.categories[i], i);
+          }
         }
-        if (parsed.addons) {
-          localStorage.setItem('furniture_store_addons_v1', JSON.stringify(parsed.addons));
+        if (parsed.addons && Array.isArray(parsed.addons)) {
+          for (const addon of parsed.addons) {
+            await supabaseDbService.upsertAddon(addon);
+          }
         }
-        setMessage({ type: 'success', text: '¡Copia restaurada correctamente! Recarga la página para visualizar.' });
+        setMessage({ type: 'success', text: '¡Copia restaurada y guardada en Supabase correctamente! Recargando...' });
         setTimeout(() => window.location.reload(), 1500);
       } catch (err) {
-        setMessage({ type: 'error', text: 'Error al leer el archivo JSON. Verifica que sea válido.' });
+        setMessage({ type: 'error', text: 'Error al procesar el archivo JSON. Verifica que sea un respaldo válido.' });
       }
     };
   };

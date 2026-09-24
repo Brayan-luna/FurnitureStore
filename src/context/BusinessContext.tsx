@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { storageService } from '../services/storageService';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { initialBusinessConfig } from '../config/initialBusiness';
+import { supabaseDbService } from '../services/supabaseDbService';
 import { BusinessConfig } from '../types';
 
 export interface BusinessContextValue {
@@ -11,16 +12,41 @@ export interface BusinessContextValue {
 const BusinessContext = createContext<BusinessContextValue | undefined>(undefined);
 
 export function BusinessProvider({ children }: { children: ReactNode }) {
-  const [business, setBusiness] = useState<BusinessConfig>(() => storageService.getBusinessConfig());
+  const [business, setBusiness] = useState<BusinessConfig>(initialBusinessConfig);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function syncBusiness() {
+      try {
+        const cloudBusiness = await supabaseDbService.getBusinessConfig();
+        if (!isMounted) return;
+        if (cloudBusiness) {
+          setBusiness({
+            ...initialBusinessConfig,
+            ...cloudBusiness
+          });
+        } else {
+          // Inicializar en Supabase si aún no está guardado
+          supabaseDbService.saveBusinessConfig(initialBusinessConfig);
+        }
+      } catch (e) {
+        console.warn('Error syncing business config from Supabase:', e);
+      }
+    }
+    syncBusiness();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const updateBusiness = (updatedConfig: BusinessConfig) => {
     setBusiness(updatedConfig);
-    storageService.saveBusinessConfig(updatedConfig);
+    supabaseDbService.saveBusinessConfig(updatedConfig);
   };
 
   const resetBusiness = () => {
-    storageService.resetToDefaults();
-    setBusiness(storageService.getBusinessConfig());
+    setBusiness(initialBusinessConfig);
+    supabaseDbService.saveBusinessConfig(initialBusinessConfig);
   };
 
   return (

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, Tag, Layers, Building2, Download, LogOut, ExternalLink, LucideIcon, Sparkles } from 'lucide-react';
+import { Package, Tag, Layers, Building2, Download, LogOut, ExternalLink, LucideIcon, Sparkles, Database, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBusiness } from '../context/BusinessContext';
+import { supabaseDbService } from '../services/supabaseDbService';
 import logoImg from '../assets/logo.png';
 import AdminLogin from '../components/admin/AdminLogin';
 import ProductManager from '../components/admin/ProductManager';
@@ -11,6 +12,7 @@ import AddonManager from '../components/admin/AddonManager';
 import CustomizerSettings from '../components/admin/CustomizerSettings';
 import BusinessSettings from '../components/admin/BusinessSettings';
 import BackupRestore from '../components/admin/BackupRestore';
+import SecuritySettings from '../components/admin/SecuritySettings';
 
 interface NavTab {
   id: string;
@@ -22,6 +24,18 @@ export default function AdminPage() {
   const { isAuthenticated, logout } = useAuth();
   const { business } = useBusiness();
   const [activeTab, setActiveTab] = useState<string>('products');
+  const [dbStatus, setDbStatus] = useState<{ connected: boolean; message: string; checking: boolean }>({
+    connected: false,
+    message: 'Comprobando conexión...',
+    checking: true
+  });
+
+  useEffect(() => {
+    supabaseDbService.testConnection().then((res) => {
+      setDbStatus({ connected: res.connected, message: res.message, checking: false });
+    });
+  }, []);
+
 
   const currentLogo = business.logoUrl || logoImg;
 
@@ -35,6 +49,7 @@ export default function AdminPage() {
     { id: 'categories', label: 'Categorías', icon: Tag },
     // { id: 'addons', label: 'Adicionales Sueltos', icon: Layers },
     { id: 'business', label: 'Identidad & WhatsApp', icon: Building2 },
+    { id: 'security', label: 'Seguridad & Acceso', icon: ShieldCheck },
     // { id: 'backup', label: 'Respaldo JSON', icon: Download },
   ];
 
@@ -85,7 +100,53 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+            {/* Indicador de estado de Base de Datos */}
+            <div
+              title={dbStatus.message}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '9999px',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                backgroundColor: dbStatus.checking
+                  ? '#F3F4F6'
+                  : dbStatus.connected
+                  ? '#ECFDF5'
+                  : '#FEF2F2',
+                color: dbStatus.checking
+                  ? '#6B7280'
+                  : dbStatus.connected
+                  ? '#059669'
+                  : '#DC2626',
+                border: `1px solid ${
+                  dbStatus.checking
+                    ? '#E5E7EB'
+                    : dbStatus.connected
+                    ? '#A7F3D0'
+                    : '#FECACA'
+                }`
+              }}
+            >
+              {dbStatus.checking ? (
+                <Database size={13} className="animate-spin" />
+              ) : dbStatus.connected ? (
+                <CheckCircle2 size={13} />
+              ) : (
+                <AlertCircle size={13} />
+              )}
+              <span>
+                {dbStatus.checking
+                  ? 'Verificando BD...'
+                  : dbStatus.connected
+                  ? 'BD Supabase Conectada'
+                  : 'BD No Conectada (Local)'}
+              </span>
+            </div>
+
             <Link
               to="/"
               style={{
@@ -190,6 +251,7 @@ export default function AdminPage() {
           {activeTab === 'categories' && <CategoryManager />}
           {activeTab === 'addons' && <AddonManager />}
           {activeTab === 'business' && <BusinessSettings />}
+          {activeTab === 'security' && <SecuritySettings />}
           {activeTab === 'backup' && <BackupRestore />}
         </div>
       </main>
