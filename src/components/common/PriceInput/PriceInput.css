@@ -1,0 +1,12 @@
+/* PriceInput — Oculta flechas spinner y estilos del input de precio */
+
+.price-input-no-arrows {
+  /* Chrome, Safari, Edge, Opera */
+  -moz-appearance: textfield;
+}
+
+.price-input-no-arrows::-webkit-outer-spin-button,
+.price-input-no-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

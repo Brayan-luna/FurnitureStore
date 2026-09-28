@@ -3,6 +3,7 @@ import { Sparkles, Save, RotateCcw, Plus, Trash2, Check, Eye, EyeOff, Layers, Sh
 import { useProducts } from '../../../context/ProductContext';
 import { CustomizerConfig, CustomizerAddonOption, CustomizerMattressOption, CustomizerSizeOption, CustomizerColorOption } from '../../../types';
 import { formatPrice } from '../../../utils/formatters';
+import PriceInput from '../../common/PriceInput';
 import './CustomizerSettings.css';
 
 export default function CustomizerSettings() {
@@ -476,13 +477,9 @@ export default function CustomizerSettings() {
 
             <div className="subcard-field">
               <label>Incremento de precio sobre PLUS ($ COP):</label>
-              <input
-                type="number"
-                step="10000"
-                min="0"
+              <PriceInput
                 value={config.quality?.premium?.priceModifier ?? ''}
-                onChange={(e) => {
-                  const val = e.target.value;
+                onChange={(val) => {
                   setConfig((prev) => ({
                     ...prev,
                     quality: {
@@ -494,6 +491,7 @@ export default function CustomizerSettings() {
                     }
                   }));
                 }}
+                placeholder="300.000"
               />
               <span className="field-hint">Actual: +{formatPrice(Number(config.quality?.premium?.priceModifier) || 0)}</span>
             </div>
@@ -580,12 +578,10 @@ export default function CustomizerSettings() {
                 onChange={(e) => setNewSizeLabel(e.target.value)}
                 required
               />
-              <input
-                type="number"
-                step="10000"
+              <PriceInput
                 placeholder="Incremento de precio ($)"
                 value={newSizePrice}
-                onChange={(e) => setNewSizePrice(e.target.value)}
+                onChange={(val) => setNewSizePrice(String(val))}
                 required
               />
             </div>
@@ -626,15 +622,12 @@ export default function CustomizerSettings() {
                 <div className="size-row-right">
                   <div className="size-row-price-input">
                     <label>Incremento ($):</label>
-                    <input
-                      type="number"
-                      step="10000"
-                      min="0"
+                    <PriceInput
                       value={size.priceModifier ?? ''}
-                      onChange={(e) => {
-                        const val = e.target.value;
+                      onChange={(val) => {
                         handleSizeChangePrice(size.id, val === '' ? '' : Math.max(0, Number(val)));
                       }}
+                      placeholder="0"
                     />
                     <span className="price-tag-preview">
                       {Number(size.priceModifier) === 0 ? 'Incluida ($0)' : `+${formatPrice(Number(size.priceModifier) || 0)}`}
@@ -692,11 +685,10 @@ export default function CustomizerSettings() {
                 onChange={(e) => setNewMattressName(e.target.value)}
                 required
               />
-              <input
-                type="number"
+              <PriceInput
                 placeholder="Precio ($)"
                 value={newMattressPrice}
-                onChange={(e) => setNewMattressPrice(e.target.value)}
+                onChange={(val) => setNewMattressPrice(String(val))}
                 required
               />
               <select value={newMattressSize} onChange={(e) => setNewMattressSize(e.target.value)}>
@@ -734,15 +726,12 @@ export default function CustomizerSettings() {
                 </div>
                 <div className="item-card-price">
                   <label>Precio:</label>
-                  <input
-                    type="number"
-                    step="10000"
-                    min="0"
+                  <PriceInput
                     value={m.price ?? ''}
-                    onChange={(e) => {
-                      const val = e.target.value;
+                    onChange={(val) => {
                       handleMattressChangePrice(m.id, val === '' ? '' : Math.max(0, Number(val)));
                     }}
+                    placeholder="0"
                   />
                   <strong>{formatPrice(Number(m.price) || 0)}</strong>
                 </div>
@@ -802,11 +791,10 @@ export default function CustomizerSettings() {
                 onChange={(e) => setNewAddonName(e.target.value)}
                 required
               />
-              <input
-                type="number"
+              <PriceInput
                 placeholder="Precio ($)"
                 value={newAddonPrice}
-                onChange={(e) => setNewAddonPrice(e.target.value)}
+                onChange={(val) => setNewAddonPrice(String(val))}
                 required
               />
               <input
@@ -860,15 +848,12 @@ export default function CustomizerSettings() {
 
                 <div className="addon-card-bottom">
                   <label>Precio ($):</label>
-                  <input
-                    type="number"
-                    step="10000"
-                    min="0"
+                  <PriceInput
                     value={addon.price ?? ''}
-                    onChange={(e) => {
-                      const val = e.target.value;
+                    onChange={(val) => {
                       handleAddonChangePrice(addon.id, val === '' ? '' : Math.max(0, Number(val)));
                     }}
+                    placeholder="0"
                   />
                   <span className="addon-price-formatted">{formatPrice(Number(addon.price) || 0)}</span>
                 </div>

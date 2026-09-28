@@ -1,6 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import Modal from '../../common/Modal';
 import ImageUploader from '../../common/ImageUploader';
+import PriceInput from '../../common/PriceInput';
 import { useProducts } from '../../../context/ProductContext';
 import { AddonItem } from '../../../types';
 import './AddonFormModal.css';
@@ -103,18 +104,13 @@ export default function AddonFormModal({
           <label className="addon-form-label">
             Precio ($ COP) *
           </label>
-          <input
-            type="number"
+          <PriceInput
             required
-            min={1}
-            step={10000}
-            className="input-field"
             value={price}
-            onChange={(e) => {
-              const val = e.target.value;
+            onChange={(val) => {
               setPrice(val === '' ? '' : Math.max(0, Number(val)));
             }}
-            placeholder="500000"
+            placeholder="500.000"
           />
         </div>
 

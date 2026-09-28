@@ -2,6 +2,7 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import Modal from '../../common/Modal';
 import ImageUploader from '../../common/ImageUploader';
 import Select from '../../common/Select';
+import PriceInput from '../../common/PriceInput';
 import { Sparkles, Sliders, Plus, Trash2, Layers, CheckSquare, Package, Check } from 'lucide-react';
 import { useProducts } from '../../../context/ProductContext';
 import { Product, ProductTypeOption, ProductAdditionalOption, CustomizationType, ProductBedCustomizerRules } from '../../../types';
@@ -355,17 +356,11 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
             <label className="product-form-label">
               Precio Base (COP) *
             </label>
-            <input
-              type="number"
-              className="input-field"
+            <PriceInput
               value={basePrice}
-              onChange={(e) => {
-                const val = e.target.value;
-                setBasePrice(val === '' ? '' : Math.max(0, Number(val)));
-              }}
-              min="1"
-              step="10000"
-              placeholder="Ej: 2700000"
+              onChange={(val) => setBasePrice(val)}
+              min={1}
+              placeholder="Ej: 2.700.000"
               required
             />
           </div>
@@ -374,17 +369,10 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
             <label className="product-form-label">
               Descuento Fijo (COP)
             </label>
-            <input
-              type="number"
-              className="input-field"
+            <PriceInput
               value={discountAmount}
-              onChange={(e) => {
-                const val = e.target.value;
-                setDiscountAmount(val === '' ? '' : Math.max(0, Number(val)));
-              }}
-              placeholder="0 (Ej: 150000)"
-              min="0"
-              step="10000"
+              onChange={(val) => setDiscountAmount(val)}
+              placeholder="0 (Ej: 150.000)"
             />
           </div>
         </div>
@@ -605,14 +593,10 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
                     />
                     <div style={{ flex: 1.4, display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>+$</span>
-                      <input
-                        type="number"
-                        className="input-field"
+                      <PriceInput
                         value={type.priceModifier}
-                        onChange={(e) => handleUpdateType(idx, 'priceModifier', e.target.value)}
+                        onChange={(val) => handleUpdateType(idx, 'priceModifier', val)}
                         placeholder="0"
-                        min="0"
-                        step="10000"
                       />
                     </div>
                     {types.length > 1 && (
@@ -668,14 +652,10 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
                       />
                       <div style={{ flex: 1.4, display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>+$</span>
-                        <input
-                          type="number"
-                          className="input-field"
+                        <PriceInput
                           value={add.priceModifier}
-                          onChange={(e) => handleUpdateAdditional(idx, 'priceModifier', e.target.value)}
+                          onChange={(val) => handleUpdateAdditional(idx, 'priceModifier', val)}
                           placeholder="0"
-                          min="0"
-                          step="10000"
                         />
                       </div>
                       <button
