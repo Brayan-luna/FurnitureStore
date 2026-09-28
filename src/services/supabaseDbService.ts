@@ -42,6 +42,9 @@ export const supabaseDbService = {
         basePrice: Number(row.base_price) || 0,
         discountAmount: Number(row.discount_amount) || 0,
         imageUrl: row.image_url || '/images/cama-cuna-plus.jpg',
+        imageUrls: Array.isArray(row.image_urls) && row.image_urls.length > 0
+          ? row.image_urls
+          : (row.image_url ? [row.image_url] : ['/images/cama-cuna-plus.jpg']),
         customizationType: row.customization_type || 'bed_customizer',
         bedRules: row.bed_rules || undefined,
         types: row.types || [],
@@ -64,6 +67,7 @@ export const supabaseDbService = {
         base_price: product.basePrice,
         discount_amount: product.discountAmount || 0,
         image_url: product.imageUrl,
+        image_urls: product.imageUrls?.length ? product.imageUrls : [product.imageUrl],
         customization_type: product.customizationType,
         bed_rules: product.bedRules || null,
         types: product.types || [],

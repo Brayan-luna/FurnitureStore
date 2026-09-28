@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, MessageCircle, Sparkles, Sliders, Tag, ShoppingBag } from 'lucide-react';
+import { Plus, MessageCircle, Sparkles, Sliders, Tag, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import Badge from '../../common/Badge';
 import CustomizerModal from '../CustomizerModal';
 import FurnitureCustomizerModal from '../FurnitureCustomizerModal';
@@ -22,6 +22,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const [isBedCustomizerOpen, setIsBedCustomizerOpen] = useState(false);
   const [isFurnitureCustomizerOpen, setIsFurnitureCustomizerOpen] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const images = product.imageUrls?.length ? product.imageUrls : [product.imageUrl || '/images/cama-cuna-plus.jpg'];
+
+  React.useEffect(() => setActiveImageIndex(0), [product.id]);
+  const showPreviousImage = () => setActiveImageIndex((index) => (index - 1 + images.length) % images.length);
+  const showNextImage = () => setActiveImageIndex((index) => (index + 1) % images.length);
 
   // Encontrar información de la categoría
   const category = categories.find((c) => c.id === product.categoryId) || {
@@ -73,13 +79,28 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Media & Badge */}
         <div className="product-card-media">
           <img
-            src={product.imageUrl || '/images/cama-cuna-plus.jpg'}
+            src={images[activeImageIndex] || images[0]}
             alt={product.name}
             loading="lazy"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/images/cama-cuna-plus.jpg';
             }}
           />
+          {images.length > 1 && (
+            <div className="product-card-gallery-controls" aria-label={`Foto ${activeImageIndex + 1} de ${images.length}`}>
+              <button type="button" className="product-card-gallery-arrow previous" onClick={showPreviousImage} aria-label="Ver foto anterior">
+                <ChevronLeft size={20} />
+              </button>
+              <div className="product-card-gallery-indicators">
+                {images.map((image, index) => (
+                  <button key={`${index}-${image.slice(0, 20)}`} type="button" className={index === activeImageIndex ? 'active' : ''} onClick={() => setActiveImageIndex(index)} aria-label={`Ver foto ${index + 1}`} aria-current={index === activeImageIndex} />
+                ))}
+              </div>
+              <button type="button" className="product-card-gallery-arrow next" onClick={showNextImage} aria-label="Ver foto siguiente">
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          )}
           <Badge
             label={category.name}
             iconName={category.icon || 'cloud'}

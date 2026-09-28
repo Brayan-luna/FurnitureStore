@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS public.store_products (
   base_price NUMERIC NOT NULL DEFAULT 0,
   discount_amount NUMERIC NOT NULL DEFAULT 0,
   image_url TEXT,
+  image_urls JSONB NOT NULL DEFAULT '[]'::jsonb,
   customization_type TEXT DEFAULT 'bed_customizer',
   bed_rules JSONB,
   types JSONB DEFAULT '[]'::jsonb,

@@ -27,6 +27,8 @@ export interface Product {
   basePrice: number;
   discountAmount?: number;
   imageUrl: string;
+  /** Galería opcional. imageUrl se conserva como imagen principal para compatibilidad. */
+  imageUrls?: string[];
   customizationType?: CustomizationType;
   bedRules?: ProductBedCustomizerRules;
   types: ProductTypeOption[];

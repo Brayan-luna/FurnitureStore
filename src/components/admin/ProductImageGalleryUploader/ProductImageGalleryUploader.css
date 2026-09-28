@@ -1,0 +1,16 @@
+.product-image-gallery-uploader { display: flex; flex-direction: column; gap: 12px; }
+.product-image-gallery-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.product-image-gallery-heading strong { color: var(--text-dark); font-size: .9rem; }
+.product-image-gallery-heading p { margin: 4px 0 0; color: var(--text-muted); font-size: .76rem; }
+.product-image-gallery-input { position: fixed; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+.product-image-gallery-add, .product-image-gallery-add-tile, .product-image-gallery-empty { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px dashed #c9c5d0; border-radius: 10px; background: #faf9fb; color: var(--color-primary-dark); cursor: pointer; font: inherit; }
+.product-image-gallery-add { flex: 0 0 auto; padding: 9px 12px; border-style: solid; font-size: .8rem; font-weight: 700; }
+.product-image-gallery-empty { min-height: 100px; flex-direction: column; padding: 18px; color: var(--text-muted); text-align: center; font-size: .82rem; }
+.product-image-gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
+.product-image-gallery-item { position: relative; aspect-ratio: 1; margin: 0; overflow: hidden; border: 1px solid var(--border-subtle); border-radius: 10px; background: #f7f5f0; }
+.product-image-gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+.product-image-gallery-item figcaption { position: absolute; left: 5px; bottom: 5px; border-radius: 5px; padding: 3px 6px; background: rgba(34, 30, 48, .82); color: white; font-size: .65rem; font-weight: 700; }
+.product-image-gallery-item button { position: absolute; right: 5px; top: 5px; display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(255,255,255,.94); color: #dc2626; cursor: pointer; }
+.product-image-gallery-add-tile { aspect-ratio: 1; flex-direction: column; font-size: .72rem; }
+.product-image-gallery-error { display: flex; align-items: center; gap: 6px; margin: 0; color: #dc2626; font-size: .78rem; }
+@media (max-width: 480px) { .product-image-gallery-heading { align-items: flex-start; flex-direction: column; } .product-image-gallery-add { width: 100%; min-height: 42px; } }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import Modal from '../../common/Modal';
-import ImageUploader from '../../common/ImageUploader';
+import ProductImageGalleryUploader from '../ProductImageGalleryUploader';
 import Select from '../../common/Select';
 import PriceInput from '../../common/PriceInput';
 import { Sparkles, Sliders, Plus, Trash2, Layers, CheckSquare, Package, Check } from 'lucide-react';
@@ -30,7 +30,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
   const [categoryId, setCategoryId] = useState('plus');
   const [basePrice, setBasePrice] = useState<number | string>(2700000);
   const [discountAmount, setDiscountAmount] = useState<number | string>(0);
-  const [imageUrl, setImageUrl] = useState('/images/cama-cuna-plus.jpg');
+  const [imageUrls, setImageUrls] = useState<string[]>(['/images/cama-cuna-plus.jpg']);
   const [customizationType, setCustomizationType] = useState<CustomizationType>('bed_customizer');
 
   // Reglas del personalizador de cama cuna (Gamas, Medidas y Adicionales permitidos para este modelo)
@@ -54,7 +54,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
       setCategoryId(initialProduct.categoryId || 'plus');
       setBasePrice(initialProduct.basePrice || 0);
       setDiscountAmount(initialProduct.discountAmount || 0);
-      setImageUrl(initialProduct.imageUrl || '/images/cama-cuna-plus.jpg');
+      setImageUrls(initialProduct.imageUrls?.length ? initialProduct.imageUrls : [initialProduct.imageUrl || '/images/cama-cuna-plus.jpg']);
       
       const isBed = ['plus', 'premium', 'tapizada', 'natural'].includes(initialProduct.categoryId);
       const determinedMode: CustomizationType = initialProduct.customizationType 
@@ -89,7 +89,7 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
       setCategoryId(defaultCat);
       setBasePrice(2700000);
       setDiscountAmount(0);
-      setImageUrl('/images/cama-cuna-plus.jpg');
+      setImageUrls(['/images/cama-cuna-plus.jpg']);
       const isBed = ['plus', 'premium', 'tapizada', 'natural'].includes(defaultCat);
       setCustomizationType(isBed ? 'bed_customizer' : 'custom_variants');
       setAllowedQualities(['PLUS', 'PREMIUM']);
@@ -226,7 +226,8 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
       categoryId,
       basePrice: numBasePrice,
       discountAmount: Math.max(0, Number(discountAmount) || 0),
-      imageUrl: imageUrl.trim() || '/images/cama-cuna-plus.jpg',
+      imageUrl: imageUrls[0]?.trim() || '/images/cama-cuna-plus.jpg',
+      imageUrls: imageUrls.filter((url) => url.trim()),
       customizationType,
       bedRules: customizationType === 'bed_customizer' ? {
         allowedQualities,
@@ -406,29 +407,13 @@ export default function ProductFormModal({ isOpen, onClose, initialProduct = nul
           )}
         </div>
 
-        {/* Carga de Imagen (Selector de Archivos Móvil/PC o URL) */}
+        {/* Galería de imágenes (compatible con móvil y selección múltiple) */}
         <div style={{ marginBottom: '4px' }}>
-          <ImageUploader
-            value={imageUrl}
-            onChange={setImageUrl}
-            label="Foto del Producto"
-            placeholder="/images/cama-cuna-plus.jpg o https://..."
-          />
-        </div>
-
-        {/* Galería rápida de imágenes prediseñadas */}
-        <div>
-          <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '6px' }}>
-            O elige una imagen de estudio disponible:
-          </label>
+          <ProductImageGalleryUploader images={imageUrls} onChange={setImageUrls} />
+          <label className="product-image-presets-label">O elegir una imagen prediseñada:</label>
           <div className="preset-images-list">
             {PRESET_IMAGES.map((preset) => (
-              <button
-                key={preset.url}
-                type="button"
-                onClick={() => setImageUrl(preset.url)}
-                className={`preset-image-btn ${imageUrl === preset.url ? 'active' : ''}`}
-              >
+              <button key={preset.url} type="button" onClick={() => setImageUrls([preset.url, ...imageUrls.slice(1)])} className={`preset-image-btn ${imageUrls[0] === preset.url ? 'active' : ''}`}>
                 {preset.label}
               </button>
             ))}

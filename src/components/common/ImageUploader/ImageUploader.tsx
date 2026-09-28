@@ -1,5 +1,5 @@
-import React, { useRef, useState, ChangeEvent, DragEvent } from 'react';
-import { Upload, Image as ImageIcon, Trash2, RefreshCw, Link as LinkIcon, AlertCircle } from 'lucide-react';
+import React, { useState, ChangeEvent, DragEvent } from 'react';
+import { Upload, Trash2, RefreshCw, AlertCircle } from 'lucide-react';
 import { compressImageFile } from '../../../utils/imageCompressor';
 import './ImageUploader.css';
 
@@ -18,17 +18,14 @@ export default function ImageUploader({
   placeholder = 'https://ejemplo.com/foto.jpg o selecciona un archivo...',
   previewHeight = 200
 }: ImageUploaderProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputId = React.useId();
   const [isDragActive, setIsDragActive] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isUrlMode, setIsUrlMode] = useState(false);
 
-  // Abrir el selector nativo de archivos (PC o Celular)
-  const triggerFileDialog = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+  const prepareFileDialog = () => {
+    setErrorMessage(null);
   };
 
   // Procesar archivo seleccionado
@@ -110,11 +107,12 @@ export default function ImageUploader({
 
       {/* Input de archivo nativo oculto (Abre selector en PC o galería/cámara en Celular) */}
       <input
-        ref={fileInputRef}
+        id={inputId}
         type="file"
-        accept="image/png, image/jpeg, image/jpg, image/webp, image/gif"
+        accept="image/*"
         onChange={handleFileChange}
-        style={{ display: 'none' }}
+        className="image-uploader-file-input"
+        aria-label={`Seleccionar imagen para ${label}`}
       />
 
       {isUrlMode ? (
@@ -171,14 +169,14 @@ export default function ImageUploader({
           <div className="image-uploader-bottom-bar">
             <span className="image-uploader-status-badge">✓ Imagen lista</span>
             <div className="image-uploader-bottom-actions">
-              <button
-                type="button"
+              <label
+                htmlFor={inputId}
                 className="image-uploader-btn change"
-                onClick={triggerFileDialog}
+                onClick={prepareFileDialog}
                 title="Seleccionar otra imagen"
               >
                 <RefreshCw size={14} /> <span>Cambiar</span>
-              </button>
+              </label>
               <button
                 type="button"
                 className="image-uploader-btn remove"
@@ -192,9 +190,10 @@ export default function ImageUploader({
         </div>
       ) : (
         /* Zona de carga amigable para hacer clic o arrastrar */
-        <div
+        <label
+          htmlFor={inputId}
           className={`image-uploader-dropzone ${isDragActive ? 'drag-active' : ''} ${isProcessing ? 'processing' : ''}`}
-          onClick={triggerFileDialog}
+          onClick={prepareFileDialog}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -216,7 +215,7 @@ export default function ImageUploader({
           <div className="image-uploader-subtitle">
             Abre la galería/cámara en tu celular o el explorador de tu PC
           </div>
-        </div>
+        </label>
       )}
 
       {errorMessage && (

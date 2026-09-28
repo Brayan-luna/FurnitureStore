@@ -29,6 +29,19 @@
   color: var(--color-primary);
 }
 
+.image-uploader-file-input {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}
+
 /* Zona de Carga / Dropzone */
 .image-uploader-dropzone {
   position: relative;
@@ -44,6 +57,11 @@
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
+}
+
+.image-uploader-dropzone:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
 .image-uploader-dropzone:hover {
